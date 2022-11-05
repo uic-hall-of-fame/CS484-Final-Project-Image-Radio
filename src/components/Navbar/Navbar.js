@@ -38,7 +38,7 @@ function Navbar() {
   };
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      {/* <Container maxWidth="xl"> */}
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
           <Typography
@@ -48,6 +48,7 @@ function Navbar() {
             href="/"
             sx={{
               mr: 2,
+              ml:1,
               display: { xs: "none", md: "flex" },
             //   fontFamily: "monospace",
             //   fontWeight: 500,
@@ -156,7 +157,7 @@ function Navbar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
+      {/* </Container> */}
     </AppBar>
   );
 }
