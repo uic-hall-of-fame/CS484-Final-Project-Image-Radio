@@ -41,10 +41,14 @@ export default function About() {
             </Typography>
 
             <Typography variant='h6' gutterBottom sx={{ ml: 4 }}>
-                We are planning to play and display the lyrics of songs in sync.
-                We will be using Spotify API for authorizing users, fetching
-                lyrics of the songs, and playing songs. Supabase database will
-                be used for backend while React will be used for Frontend.
+                We plan to play a song and display its lyrics in a synchronous
+                manner. We will use <b>OAuth with Spotify</b> for user login and
+                to access user playlists. After this, we will fetch the
+                timestamped lyrics of the song and play it using the{' '}
+                <b>Spotify API</b>. <b>Supabase</b> database will be used for
+                the backend, while <b>React</b> will be used for the frontend.
+                We will use <b>GitHub</b> for version control along with{' '}
+                <b>Netlify</b> for CI and hosting.
             </Typography>
         </>
     );
