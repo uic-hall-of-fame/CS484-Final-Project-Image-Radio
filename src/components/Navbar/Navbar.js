@@ -10,14 +10,11 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 
-// const pages = ["Home", "Pricing", "Blog"];
-const pages = ['About'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-// const settings = ["Logout"];
+function Navbar({ supabase, session = null }) {
+    const pages = ['About'];
+    const settings = ['Profile', 'Logout'];
 
-function Navbar({ supabase }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -27,7 +24,7 @@ function Navbar({ supabase }) {
         });
     }
 
-    async function signout() {
+    async function signOut() {
         const { error } = await supabase.auth.signOut();
     }
 
@@ -45,11 +42,10 @@ function Navbar({ supabase }) {
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
     return (
         <AppBar position="static">
-            {/* <Container maxWidth="xl"> */}
             <Toolbar disableGutters>
-                {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
                 <Typography
                     variant="h6"
                     noWrap
@@ -59,9 +55,6 @@ function Navbar({ supabase }) {
                         mr: 2,
                         ml: 1,
                         display: { xs: 'none', md: 'flex' },
-                        //   fontFamily: "monospace",
-                        //   fontWeight: 500,
-                        //   letterSpacing: ".3rem",
                         color: 'inherit',
                         textDecoration: 'none',
                     }}
@@ -110,26 +103,7 @@ function Navbar({ supabase }) {
                         ))}
                     </Menu>
                 </Box>
-                <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                <Typography
-                    variant="h5"
-                    noWrap
-                    component="a"
-                    href=""
-                    sx={{
-                        mr: 2,
-                        display: { xs: 'flex', md: 'none' },
-                        flexGrow: 1,
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        letterSpacing: '.3rem',
-                        color: 'inherit',
-                        textDecoration: 'none',
-                    }}
-                >
-                    LOGO
-                </Typography>
-                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                <Box sx={{ flexGrow: 1, mt: 0.5 }}>
                     {pages.map((page) => (
                         <Button
                             key={page}
@@ -145,12 +119,22 @@ function Navbar({ supabase }) {
                     <Tooltip title="Open settings">
                         <IconButton
                             onClick={handleOpenUserMenu}
-                            sx={{ p: 0 }}
+                            sx={{
+                                p: 0,
+                                mr: '10px',
+                                color: 'white',
+                                fontSize: '20px',
+                            }}
                         >
-                            <Avatar
-                                alt="Remy Sharp"
-                                src="/static/images/avatar/2.jpg"
-                            />
+                            {session ? (
+                                <Avatar
+                                    alt="Remy Sharp"
+                                    src="/static/images/user.jpg"
+                                    sx={{ mr: '10px' }}
+                                />
+                            ) : (
+                                <>Login</>
+                            )}
                         </IconButton>
                     </Tooltip>
                     <Menu
@@ -182,7 +166,6 @@ function Navbar({ supabase }) {
                     </Menu>
                 </Box>
             </Toolbar>
-            {/* </Container> */}
         </AppBar>
     );
 }
