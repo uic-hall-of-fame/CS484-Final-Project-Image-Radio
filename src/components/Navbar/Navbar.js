@@ -17,9 +17,19 @@ const pages = ['About'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 // const settings = ["Logout"];
 
-function Navbar() {
+function Navbar({ supabase }) {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+    async function signInWithSpotify() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'spotify',
+        });
+    }
+
+    async function signout() {
+        const { error } = await supabase.auth.signOut();
+    }
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
