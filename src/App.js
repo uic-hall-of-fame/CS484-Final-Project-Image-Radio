@@ -10,8 +10,8 @@ function App() {
     // For fetching the session when the app is run for the first time and setting up oauth change listeners
     useEffect(() => {
         // Fetch session data
-        supabase.auth.getSession().then((data) => {
-            setSession(data.session);
+        supabase.auth.getSession().then((res) => {
+            setSession(res?.data.session ?? null);
         });
 
         // Creating listener for oauth state change
@@ -29,7 +29,10 @@ function App() {
 
     return (
         <>
-            <Navbar supabase={supabase} />
+            <Navbar
+                supabase={supabase}
+                session={session}
+            />
             <About />
         </>
     );

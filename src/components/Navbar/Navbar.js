@@ -5,42 +5,42 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 
 function Navbar({ supabase, session = null }) {
     const pages = ['About'];
     const settings = ['Profile', 'Logout'];
 
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
     async function signInWithSpotify() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        await supabase.auth.signInWithOAuth({
             provider: 'spotify',
         });
     }
 
     async function signOut() {
-        const { error } = await supabase.auth.signOut();
+        await supabase.auth.signOut();
     }
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleSettings = (setting) => {
+        handleCloseUserMenu();
+        switch (setting) {
+            case 'Logout':
+                signOut();
+                break;
+            default:
+        }
     };
 
     return (
@@ -66,7 +66,6 @@ function Navbar({ supabase, session = null }) {
                     {pages.map((page) => (
                         <Button
                             key={page}
-                            onClick={handleCloseNavMenu}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             {page}
@@ -76,7 +75,9 @@ function Navbar({ supabase, session = null }) {
 
                 <Box sx={{ flexGrow: 0 }}>
                     <IconButton
-                        onClick={session ? handleOpenUserMenu : null}
+                        onClick={
+                            session ? handleOpenUserMenu : signInWithSpotify
+                        }
                         sx={{
                             p: 0,
                             mr: '10px',
@@ -113,7 +114,7 @@ function Navbar({ supabase, session = null }) {
                         {settings.map((setting) => (
                             <MenuItem
                                 key={setting}
-                                onClick={handleCloseUserMenu}
+                                onClick={() => handleSettings(setting)}
                             >
                                 <Typography textAlign="center">
                                     {setting}
