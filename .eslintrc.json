@@ -18,7 +18,8 @@
     "rules": {
         "react/jsx-filename-extension": ["off"],
         "react/react-in-jsx-scope": ["off"],
-        "react/jsx-props-no-spreading": ["warn"]
-        // "linebreak-style": ["windows"]
+        "react/jsx-props-no-spreading": ["warn"],
+        "react/prop-types":["off"],
+        "no-unused-vars":["warn"]
     }
 }

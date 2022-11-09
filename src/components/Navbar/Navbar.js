@@ -5,41 +5,47 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 
-// const pages = ["Home", "Pricing", "Blog"];
-const pages = ['About'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-// const settings = ["Logout"];
+function Navbar({ supabase, session = null }) {
+    const pages = ['About'];
+    const settings = ['Profile', 'Logout'];
 
-function Navbar() {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
+    async function signInWithSpotify() {
+        await supabase.auth.signInWithOAuth({
+            provider: 'spotify',
+        });
+    }
+
+    async function signOut() {
+        await supabase.auth.signOut();
+    }
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
+
+    const handleSettings = (setting) => {
+        handleCloseUserMenu();
+        switch (setting) {
+            case 'Logout':
+                signOut();
+                break;
+            default:
+        }
+    };
+
     return (
         <AppBar position="static">
-            {/* <Container maxWidth="xl"> */}
             <Toolbar disableGutters>
-                {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
                 <Typography
                     variant="h6"
                     noWrap
@@ -49,9 +55,6 @@ function Navbar() {
                         mr: 2,
                         ml: 1,
                         display: { xs: 'none', md: 'flex' },
-                        //   fontFamily: "monospace",
-                        //   fontWeight: 500,
-                        //   letterSpacing: ".3rem",
                         color: 'inherit',
                         textDecoration: 'none',
                     }}
@@ -59,71 +62,10 @@ function Navbar() {
                     Image Radio
                 </Typography>
 
-                <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleOpenNavMenu}
-                        color="inherit"
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorElNav}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        open={Boolean(anchorElNav)}
-                        onClose={handleCloseNavMenu}
-                        sx={{
-                            display: { xs: 'block', md: 'none' },
-                        }}
-                    >
-                        {pages.map((page) => (
-                            <MenuItem
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                            >
-                                <Typography textAlign="center">
-                                    {page}
-                                </Typography>
-                            </MenuItem>
-                        ))}
-                    </Menu>
-                </Box>
-                <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                <Typography
-                    variant="h5"
-                    noWrap
-                    component="a"
-                    href=""
-                    sx={{
-                        mr: 2,
-                        display: { xs: 'flex', md: 'none' },
-                        flexGrow: 1,
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        letterSpacing: '.3rem',
-                        color: 'inherit',
-                        textDecoration: 'none',
-                    }}
-                >
-                    LOGO
-                </Typography>
-                <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                <Box sx={{ flexGrow: 1, mt: 0.5 }}>
                     {pages.map((page) => (
                         <Button
                             key={page}
-                            onClick={handleCloseNavMenu}
                             sx={{ my: 2, color: 'white', display: 'block' }}
                         >
                             {page}
@@ -132,17 +74,27 @@ function Navbar() {
                 </Box>
 
                 <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title="Open settings">
-                        <IconButton
-                            onClick={handleOpenUserMenu}
-                            sx={{ p: 0 }}
-                        >
+                    <IconButton
+                        onClick={
+                            session ? handleOpenUserMenu : signInWithSpotify
+                        }
+                        sx={{
+                            p: 0,
+                            mr: '10px',
+                            color: 'white',
+                            fontSize: '20px',
+                        }}
+                    >
+                        {session ? (
                             <Avatar
                                 alt="Remy Sharp"
-                                src="/static/images/avatar/2.jpg"
+                                src="/static/images/user.jpg"
+                                sx={{ mr: '10px' }}
                             />
-                        </IconButton>
-                    </Tooltip>
+                        ) : (
+                            <>Login</>
+                        )}
+                    </IconButton>
                     <Menu
                         sx={{ mt: '45px' }}
                         id="menu-appbar"
@@ -162,7 +114,7 @@ function Navbar() {
                         {settings.map((setting) => (
                             <MenuItem
                                 key={setting}
-                                onClick={handleCloseUserMenu}
+                                onClick={() => handleSettings(setting)}
                             >
                                 <Typography textAlign="center">
                                     {setting}
@@ -172,7 +124,6 @@ function Navbar() {
                     </Menu>
                 </Box>
             </Toolbar>
-            {/* </Container> */}
         </AppBar>
     );
 }
