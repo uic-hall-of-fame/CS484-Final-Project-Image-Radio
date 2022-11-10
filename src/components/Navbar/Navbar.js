@@ -87,7 +87,7 @@ function Navbar({ supabase, session = null }) {
                     >
                         {session ? (
                             <Avatar
-                                alt="Remy Sharp"
+                                alt={session.user.user_metadata.full_name}
                                 src="/static/images/user.jpg"
                                 sx={{ mr: '10px' }}
                             />
