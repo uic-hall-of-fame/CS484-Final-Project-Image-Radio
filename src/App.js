@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import About from './components/About/About';
+import Player from './components/Player/Player';
 import supabase from './supabaseClient';
 
 function App() {
@@ -33,7 +35,16 @@ function App() {
                 supabase={supabase}
                 session={session}
             />
-            <About />
+            <Routes>
+                <Route
+                    path="/"
+                    element={<About />}
+                />
+                <Route
+                    path="/player"
+                    element={session ? <Player /> : <Navigate to="/" />}
+                />
+            </Routes>
         </>
     );
 }
