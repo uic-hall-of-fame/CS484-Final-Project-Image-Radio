@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { React, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,10 +11,14 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 
 function Navbar({ supabase, session = null }) {
-    const pages = ['About'];
+    const pages = ['About', 'Player'];
     const settings = ['Profile', 'Logout'];
+    const navLinks = {
+        About: '/',
+        Player: '/player',
+    };
 
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
 
     async function signInWithSpotify() {
         await supabase.auth.signInWithOAuth({
@@ -62,14 +67,26 @@ function Navbar({ supabase, session = null }) {
                     Image Radio
                 </Typography>
 
-                <Box sx={{ flexGrow: 1, mt: 0.5 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexGrow: 1,
+                        flexDirection: 'row',
+                        mt: 0.5,
+                    }}
+                >
                     {pages.map((page) => (
-                        <Button
+                        <NavLink
                             key={page}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
+                            to={navLinks[page]}
+                            style={{ textDecoration: 'none' }}
                         >
-                            {page}
-                        </Button>
+                            <Button
+                                sx={{ my: 2, color: 'white', display: 'block' }}
+                            >
+                                {page}
+                            </Button>
+                        </NavLink>
                     ))}
                 </Box>
 
