@@ -9,13 +9,13 @@ import supabase from './supabaseClient';
 function App() {
     const [session, setSession] = useState(null);
 
-    const getSongDetails = async (songName, songArtist) => {
+    const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
         const { provider_token } = session;
 
         // The regex function is replacing mulitple spaces with a single space (https://stackoverflow.com/questions/1981349/regex-to-replace-multiple-spaces-with-a-single-space)
         const query = `${songName
             .replace(/\s\s+/g, ' ')
-            .replaceAll(' ', '+')}&${songArtist
+            .replaceAll(' ', '+')}+${songArtist
             .replace(/\s\s+/g, ' ')
             .replaceAll(' ', '+')}`;
         const type = 'track';
@@ -36,8 +36,23 @@ function App() {
         const data = await response.json();
 
         // Extracting details from data
-        const artist = data.tracks.items[0].album.artists[0].name;
-        console.log(artist); // Could be an array, check with songs with multiple artists
+
+        // Extracting all the artists of the song
+        const { artists } = data.tracks.items[0];
+
+        let artistString = artists[0].name; // First artist of the song
+
+        // Intermediate artists of the song separated by commas
+        for (let i = 1; i < artists.length - 1; i++) {
+            artistString = `${artistString}, ${artists[i].name}`;
+        }
+
+        // Last artist of the song displayed after & (When multiple song artists present)
+        if (artists.length > 1) {
+            artistString = `${artistString} & ${
+                artists[artists.length - 1].name
+            }`;
+        }
         const { id, name } = data.tracks.items[0];
         const href = data.tracks.items[0].external_urls.spotify;
         const album_image = data.tracks.items[0].album.images;
@@ -46,9 +61,26 @@ function App() {
             song_id: id,
             song_name: name,
             song_link: href,
+            artistString,
             album_image,
             album_name,
         };
+    };
+
+    const getSongLyricsByID = async (songID) => {
+        // Source: https://github.com/akashrchandran/spotify-lyrics-api
+        const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
+        const response = await fetch(url, { method: 'GET' });
+        const lyricsData = await response.json();
+        return lyricsData;
+    };
+
+    const getSongLyricsByNameAndArtist = async (songName, songArtist) => {
+        const { song_id } = await getSongDetailsByNameAndArtist(
+            songName,
+            songArtist,
+        );
+        const songLyrics = await getSongLyricsByID(song_id);
     };
 
     // For fetching the session when the app is run for the first time and setting up oauth change listeners
