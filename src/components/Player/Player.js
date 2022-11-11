@@ -17,12 +17,26 @@ export default function Player() {
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
 
-    const handleChange = (event) => {
-        setTokenText(event.target.value);
-    };
+    const scopes = [
+        'streaming',
+        'user-read-email',
+        'user-read-private',
+        'user-library-read',
+        'user-library-modify',
+        'user-read-playback-state',
+        'user-modify-playback-state',
+    ];
+
+    const tokenPath = `https://accounts.spotify.com/en/authorize?response_type=token&client_id=adaaf209fb064dfab873a71817029e0d&redirect_uri=https:%2F%2Fdeveloper.spotify.com%2Fdocumentation%2Fweb-playback-sdk%2Fquick-start%2F&scope=${scopes.join(
+        '%20',
+    )}&show_dialog=true`;
 
     const handleSetToken = () => {
         setToken(tokenText);
+    };
+
+    const handleChange = (event) => {
+        setTokenText(event.target.value);
     };
 
     const handleClickShowToken = () => {
@@ -98,6 +112,14 @@ export default function Player() {
                     onClick={handleSetToken}
                 >
                     Play Music
+                </Button>
+                <Button
+                    href={tokenPath}
+                    target="_blank"
+                    size="small"
+                    variant="contained"
+                >
+                    Generate Access Token
                 </Button>
             </div>
         </>
