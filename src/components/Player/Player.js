@@ -33,12 +33,19 @@ export default function Player() {
         event.preventDefault();
     };
 
+    const getPlayerUpdates = (playerState) => {
+        console.log(playerState);
+    };
+
     return (
         <>
             {token !== '' ? (
                 <div style={{ marginTop: 50, marginBottom: 30 }}>
                     <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
-                        <MusicPlayer token={token} />
+                        <MusicPlayer
+                            token={token}
+                            callback={getPlayerUpdates}
+                        />
                     </ErrorBoundary>
                 </div>
             ) : null}
