@@ -35,13 +35,19 @@ export default function Player() {
 
     return (
         <>
+            {token !== '' ? (
+                <div style={{ marginTop: 50, marginBottom: 30 }}>
+                    <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
+                        <MusicPlayer token={token} />
+                    </ErrorBoundary>
+                </div>
+            ) : null}
             <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginTop: 30,
-                    marginBottom: 50,
                     columnGap: 20,
                 }}
             >
@@ -87,11 +93,6 @@ export default function Player() {
                     Play Music
                 </Button>
             </div>
-            {token !== '' ? (
-                <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
-                    <MusicPlayer token={token} />
-                </ErrorBoundary>
-            ) : null}
         </>
     );
 }
