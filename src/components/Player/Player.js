@@ -16,6 +16,7 @@ export default function Player() {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
+    const [uris, setUris] = useState([]);
 
     const scopes = [
         'streaming',
@@ -129,6 +130,7 @@ export default function Player() {
             songArtist,
         );
 
+        setUris([...uris, `spotify:track:${song_id}`]);
         const songLyrics = await getSongLyricsByID(song_id);
 
         return songLyrics;
@@ -142,6 +144,7 @@ export default function Player() {
                         <MusicPlayer
                             token={token}
                             callback={getPlayerUpdates}
+                            uris={uris}
                         />
                     </ErrorBoundary>
                 </div>
