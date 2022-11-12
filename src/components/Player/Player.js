@@ -154,7 +154,7 @@ export default function Player() {
 
     return (
         <>
-            {token !== '' ? (
+            {token !== '' && uris.length > 0 ? (
                 <div style={{ marginTop: 50, marginBottom: 30 }}>
                     <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
                         <MusicPlayer
@@ -251,7 +251,11 @@ export default function Player() {
                     <Button
                         variant="contained"
                         size="small"
-                        onClick={() => addSongUri(songText, artistText)}
+                        onClick={() => {
+                            setSongText('');
+                            setArtistText('');
+                            addSongUri(songText, artistText);
+                        }}
                     >
                         Add Song to Queue
                     </Button>
