@@ -21,6 +21,7 @@ export default function Player() {
     const [songText, setSongText] = useState('');
     const [artistText, setArtistText] = useState('');
     const [lyrics, setLyrics] = useState([]);
+    const [play, setPlay] = useState(false);
 
     const scopes = [
         'streaming',
@@ -62,6 +63,17 @@ export default function Player() {
 
     const getPlayerUpdates = (playerState) => {
         console.log(playerState);
+    };
+
+    const refreshPage = () => {
+        setToken('');
+        setTokenText('');
+        setShowToken(false);
+        setUris([]);
+        setSongText('');
+        setArtistText('');
+        setLyrics([]);
+        setPlay(false);
     };
 
     const addSongUri = async (songName, songArtist) => {
@@ -154,7 +166,7 @@ export default function Player() {
 
     return (
         <>
-            {token !== '' && uris.length > 0 ? (
+            {token !== '' && play && uris.length > 0 ? (
                 <div style={{ marginTop: 50, marginBottom: 30 }}>
                     <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
                         <MusicPlayer
@@ -215,7 +227,7 @@ export default function Player() {
                         handleSetToken();
                     }}
                 >
-                    Play Music
+                    Launch Player
                 </Button>
                 <Button
                     href={tokenPath}
@@ -226,7 +238,7 @@ export default function Player() {
                     Generate Access Token
                 </Button>
             </div>
-            {token !== '' ? (
+            {token !== '' && !play ? (
                 <div
                     style={{
                         display: 'flex',
@@ -258,6 +270,36 @@ export default function Player() {
                         }}
                     >
                         Add Song to Queue
+                    </Button>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                            if (uris.length > 0) {
+                                setPlay(true);
+                            }
+                        }}
+                    >
+                        Play Songs
+                    </Button>
+                </div>
+            ) : null}
+            {token !== '' && play ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: 30,
+                        columnGap: 20,
+                    }}
+                >
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={refreshPage}
+                    >
+                        Reset Player
                     </Button>
                 </div>
             ) : null}
