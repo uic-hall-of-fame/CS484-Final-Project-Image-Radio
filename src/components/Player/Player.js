@@ -51,6 +51,89 @@ export default function Player() {
         console.log(playerState);
     };
 
+    const getSongDetailsByNameAndArtist = async (
+        songName = 'Blank Space',
+        songArtist = 'Taylor Swift',
+    ) => {
+        const { provider_token } = token;
+
+        // The regex function is replacing mulitple spaces with a single space (https://stackoverflow.com/questions/1981349/regex-to-replace-multiple-spaces-with-a-single-space)
+        const query = `${songName
+            .replace(/\s\s+/g, ' ')
+            .replaceAll(' ', '+')}+${songArtist
+            .replace(/\s\s+/g, ' ')
+            .replaceAll(' ', '+')}`;
+
+        const type = 'track';
+        const limit = 1;
+        const offset = 0;
+
+        // https://developer.spotify.com/console/get-search-item/
+        const url = `https://api.spotify.com/v1/search?q=${query}&type=${type}&limit=${limit}&offset=${offset}`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${provider_token}`,
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+
+        const data = await response.json();
+
+        // Extracting all the artists of the song
+        const { artists } = data.tracks.items[0];
+
+        let artistString = artists[0].name; // First artist of the song
+
+        // Intermediate artists of the song separated by commas
+        for (let i = 1; i < artists.length - 1; i++) {
+            artistString = `${artistString}, ${artists[i].name}`;
+        }
+
+        // Last artist of the song displayed after & (When multiple song artists present)
+        if (artists.length > 1) {
+            artistString = `${artistString} & ${
+                artists[artists.length - 1].name
+            }`;
+        }
+
+        const { id, name } = data.tracks.items[0];
+        const href = data.tracks.items[0].external_urls.spotify;
+        const album_image = data.tracks.items[0].album.images;
+        const album_name = data.tracks.items[0].album.name;
+
+        return {
+            song_id: id,
+            song_name: name,
+            song_link: href,
+            artistString,
+            album_image,
+            album_name,
+        };
+    };
+
+    const getSongLyricsByID = async (songID) => {
+        // Source: https://github.com/akashrchandran/spotify-lyrics-api
+        const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
+        const response = await fetch(url, { method: 'GET' });
+        const lyricsData = await response.json();
+
+        return lyricsData;
+    };
+
+    const getSongLyricsByNameAndArtist = async (songName, songArtist) => {
+        const { song_id } = await getSongDetailsByNameAndArtist(
+            songName,
+            songArtist,
+        );
+
+        const songLyrics = await getSongLyricsByID(song_id);
+
+        return songLyrics;
+    };
+
     return (
         <>
             {token !== '' ? (
@@ -109,7 +192,13 @@ export default function Player() {
                 <Button
                     variant="contained"
                     size="small"
-                    onClick={handleSetToken}
+                    onClick={() => {
+                        handleSetToken();
+                        getSongLyricsByNameAndArtist(
+                            'Blank Space',
+                            'Taylor Swift',
+                        ).then((lyrics) => console.log(lyrics));
+                    }}
                 >
                     Play Music
                 </Button>
