@@ -7,6 +7,7 @@ import {
     InputAdornment,
     IconButton,
     Button,
+    TextField,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
@@ -17,6 +18,9 @@ export default function Player() {
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
     const [uris, setUris] = useState([]);
+    const [songText, setSongText] = useState('');
+    const [artistText, setArtistText] = useState('');
+    const [lyrics, setLyrics] = useState([]);
 
     const scopes = [
         'streaming',
@@ -36,7 +40,7 @@ export default function Player() {
         setToken(tokenText);
     };
 
-    const handleChange = (event) => {
+    const handleTokenChange = (event) => {
         setTokenText(event.target.value);
     };
 
@@ -48,16 +52,29 @@ export default function Player() {
         event.preventDefault();
     };
 
+    const handleSongChange = (event) => {
+        setSongText(event.target.value);
+    };
+
+    const handleArtistChange = (event) => {
+        setArtistText(event.target.value);
+    };
+
     const getPlayerUpdates = (playerState) => {
         console.log(playerState);
     };
 
-    const getSongDetailsByNameAndArtist = async (
-        songName = 'Blank Space',
-        songArtist = 'Taylor Swift',
-    ) => {
-        const { provider_token } = token;
+    const addSongUri = async (songName, songArtist) => {
+        const [songID, songLyrics] = await getSongLyricsByNameAndArtist(
+            songName,
+            songArtist,
+        );
 
+        setUris([...uris, `spotify:track:${songID}`]);
+        setLyrics([...lyrics, { song_id: songID, lyrics: songLyrics }]);
+    };
+
+    const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
         // The regex function is replacing mulitple spaces with a single space (https://stackoverflow.com/questions/1981349/regex-to-replace-multiple-spaces-with-a-single-space)
         const query = `${songName
             .replace(/\s\s+/g, ' ')
@@ -75,7 +92,7 @@ export default function Player() {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${provider_token}`,
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
@@ -130,10 +147,9 @@ export default function Player() {
             songArtist,
         );
 
-        setUris([...uris, `spotify:track:${song_id}`]);
         const songLyrics = await getSongLyricsByID(song_id);
 
-        return songLyrics;
+        return [song_id, songLyrics];
     };
 
     return (
@@ -171,7 +187,7 @@ export default function Player() {
                         id="outlined-adornment-password"
                         type={showToken ? 'text' : 'password'}
                         value={tokenText}
-                        onChange={handleChange}
+                        onChange={handleTokenChange}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
@@ -197,10 +213,6 @@ export default function Player() {
                     size="small"
                     onClick={() => {
                         handleSetToken();
-                        getSongLyricsByNameAndArtist(
-                            'Blank Space',
-                            'Taylor Swift',
-                        ).then((lyrics) => console.log(lyrics));
                     }}
                 >
                     Play Music
@@ -212,6 +224,26 @@ export default function Player() {
                     variant="contained"
                 >
                     Generate Access Token
+                </Button>
+            </div>
+            <div>
+                <TextField
+                    label="Song Name"
+                    variant="outlined"
+                    value={songText}
+                    onChange={handleSongChange}
+                />
+                <TextField
+                    label="Artist Name"
+                    variant="outlined"
+                    value={artistText}
+                    onChange={handleArtistChange}
+                />
+                <Button
+                    variant="contained"
+                    onClick={() => addSongUri(songText, artistText)}
+                >
+                    Add Song to Queue
                 </Button>
             </div>
         </>

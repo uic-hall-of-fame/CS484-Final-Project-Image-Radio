@@ -22,6 +22,7 @@
         "react/prop-types": ["off"],
         "no-unused-vars": ["warn"],
         "camelcase": ["off"],
-        "no-plusplus": ["off"]
+        "no-plusplus": ["off"],
+        "no-use-before-define": ["off"]
     }
 }
