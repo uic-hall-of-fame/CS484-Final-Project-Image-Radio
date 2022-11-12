@@ -226,26 +226,37 @@ export default function Player() {
                     Generate Access Token
                 </Button>
             </div>
-            <div>
-                <TextField
-                    label="Song Name"
-                    variant="outlined"
-                    value={songText}
-                    onChange={handleSongChange}
-                />
-                <TextField
-                    label="Artist Name"
-                    variant="outlined"
-                    value={artistText}
-                    onChange={handleArtistChange}
-                />
-                <Button
-                    variant="contained"
-                    onClick={() => addSongUri(songText, artistText)}
+            {token !== '' ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: 30,
+                        columnGap: 20,
+                    }}
                 >
-                    Add Song to Queue
-                </Button>
-            </div>
+                    <TextField
+                        label="Song Name"
+                        variant="outlined"
+                        value={songText}
+                        onChange={handleSongChange}
+                    />
+                    <TextField
+                        label="Artist Name"
+                        variant="outlined"
+                        value={artistText}
+                        onChange={handleArtistChange}
+                    />
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => addSongUri(songText, artistText)}
+                    >
+                        Add Song to Queue
+                    </Button>
+                </div>
+            ) : null}
         </>
     );
 }
