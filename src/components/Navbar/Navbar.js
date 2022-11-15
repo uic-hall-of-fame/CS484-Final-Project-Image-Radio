@@ -130,6 +130,20 @@ function Navbar({ supabase, session = null }) {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
+                        <div
+                            style={{
+                                cursor: 'default',
+                                backgroundColor: 'transparent',
+                            }}
+                            className="css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root" // MenuItem CSS class
+                        >
+                            <Typography
+                                textAlign="center"
+                                sx={{ fontWeight: 'bold' }}
+                            >
+                                Hi, {session.user.user_metadata.full_name}
+                            </Typography>
+                        </div>
                         {settings.map((setting) => (
                             <MenuItem
                                 key={setting}
