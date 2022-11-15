@@ -76,14 +76,14 @@ export default function Player() {
         setPlay(false);
     };
 
-    const addSongUri = async (songName, songArtist) => {
-        const [songID, songLyrics] = await getSongLyricsByNameAndArtist(
+    const addSongUriAndLyrics = async (songName, songArtist) => {
+        const [songID, songLyrics] = await getIdAndLyricsByNameAndArtist(
             songName,
             songArtist,
         );
 
         setUris([...uris, `spotify:track:${songID}`]);
-        setLyrics([...lyrics, { song_id: songID, lyrics: songLyrics }]);
+        setLyrics([...lyrics, { songID: songLyrics }]);
     };
 
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
@@ -153,7 +153,7 @@ export default function Player() {
         return lyricsData;
     };
 
-    const getSongLyricsByNameAndArtist = async (songName, songArtist) => {
+    const getIdAndLyricsByNameAndArtist = async (songName, songArtist) => {
         const { song_id } = await getSongDetailsByNameAndArtist(
             songName,
             songArtist,
@@ -266,7 +266,7 @@ export default function Player() {
                         onClick={() => {
                             setSongText('');
                             setArtistText('');
-                            addSongUri(songText, artistText);
+                            addSongUriAndLyrics(songText, artistText);
                         }}
                     >
                         Add Song to Queue
