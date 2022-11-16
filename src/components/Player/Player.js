@@ -20,7 +20,7 @@ export default function Player() {
     const [uris, setUris] = useState([]);
     const [songText, setSongText] = useState('');
     const [artistText, setArtistText] = useState('');
-    const [lyrics, setLyrics] = useState([]);
+    const [lyrics, setLyrics] = useState({});
     const [play, setPlay] = useState(false);
 
     const scopes = [
@@ -83,7 +83,7 @@ export default function Player() {
         );
 
         setUris([...uris, `spotify:track:${songID}`]);
-        setLyrics([...lyrics, { songID: songLyrics }]);
+        setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
     };
 
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
