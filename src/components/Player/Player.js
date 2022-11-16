@@ -22,6 +22,7 @@ export default function Player() {
     const [artistText, setArtistText] = useState('');
     const [lyrics, setLyrics] = useState({});
     const [play, setPlay] = useState(false);
+    const [liveLyrics, setLiveLyrics] = useState('');
 
     const scopes = [
         'streaming',
@@ -63,6 +64,22 @@ export default function Player() {
 
     const getPlayerUpdates = (playerState) => {
         console.log(playerState);
+        if (playerState.isPlaying) {
+            const startTime = playerState.progressMs;
+            const songLyrics = lyrics[playerState.track.id].lines;
+            console.log(startTime);
+            console.log(songLyrics);
+            const startIndex = getStartIndex(startTime, songLyrics);
+            console.log(startIndex);
+        }
+    };
+    const getStartIndex = (startTime, songLyrics) => {
+        for (let index = 0; index < songLyrics.length; index++) {
+            if (startTime < parseInt(songLyrics[index].startTimeMs, 10)) {
+                return index - 1;
+            }
+        }
+        return songLyrics.length - 1;
     };
 
     const refreshPage = () => {
@@ -303,6 +320,7 @@ export default function Player() {
                     </Button>
                 </div>
             ) : null}
+            <div>Lyrics: {liveLyrics}</div>
         </>
     );
 }
