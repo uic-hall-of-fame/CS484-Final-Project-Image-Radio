@@ -13,6 +13,9 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
 
+let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
+// https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
+
 export default function Player() {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
@@ -64,22 +67,65 @@ export default function Player() {
 
     const getPlayerUpdates = (playerState) => {
         console.log(playerState);
+
+        if (timeOutID) {
+            clearTimeout(timeOutID); // Stop any setTimeout if running
+        }
+
         if (playerState.isPlaying) {
+            // If the song is being played
             const startTime = playerState.progressMs;
             const songLyrics = lyrics[playerState.track.id].lines;
-            console.log(startTime);
-            console.log(songLyrics);
-            const startIndex = getStartIndex(startTime, songLyrics);
-            console.log(startIndex);
+            const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
+
+            // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
+            let offset =
+                startIndex !== -1
+                    ? startTime - songLyrics[startIndex].startTimeMs
+                    : startTime; // When the lyrics have not started in the song
+
+            offset += 475; // Manually syncing the lag
+
+            // Display the lyrics on the screen
+            displayLyrics(startIndex, songLyrics, offset);
         }
     };
     const getStartIndex = (startTime, songLyrics) => {
+        // This function will return the index of the songLyrics array from which the lyrics will start displaying on the screen
         for (let index = 0; index < songLyrics.length; index++) {
             if (startTime < parseInt(songLyrics[index].startTimeMs, 10)) {
                 return index - 1;
             }
         }
         return songLyrics.length - 1;
+    };
+    const displayLyrics = (startIndex, songLyrics, offset = 0) => {
+        // This function will display the lyrics on the screen
+
+        if (startIndex === -1) {
+            // When the lyrics have not started in the song
+            setLiveLyrics('');
+
+            // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
+            const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
+            timeOutID = setTimeout(() => {
+                displayLyrics(startIndex + 1, songLyrics);
+            }, timeOut);
+        } else {
+            // When the lyrics have started in the song
+            setLiveLyrics(songLyrics[startIndex].words);
+
+            // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
+            const timeOut =
+                songLyrics[startIndex + 1].startTimeMs -
+                songLyrics[startIndex].startTimeMs -
+                offset;
+            if (startIndex !== songLyrics.length - 2) {
+                timeOutID = setTimeout(() => {
+                    displayLyrics(startIndex + 1, songLyrics);
+                }, timeOut);
+            }
+        }
     };
 
     const refreshPage = () => {
