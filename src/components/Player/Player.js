@@ -15,7 +15,7 @@ import PlayerErrorHandler from './PlayerErrorHandler';
 
 let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
-
+let manualButtonClick = false;
 export default function Player() {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
@@ -71,8 +71,20 @@ export default function Player() {
         if (timeOutID) {
             clearTimeout(timeOutID); // Stop any setTimeout if running
         }
-
-        if (playerState.isPlaying) {
+        if (manualButtonClick) {
+            const play_pause_element =
+                document.getElementsByClassName('rswp__toggle');
+            manualButtonClick = false;
+            play_pause_element[0].click();
+        } else if (
+            playerState.isPlaying &&
+            playerState.type === 'progress_update'
+        ) {
+            const play_pause_element =
+                document.getElementsByClassName('rswp__toggle');
+            manualButtonClick = true;
+            play_pause_element[0].click();
+        } else if (playerState.isPlaying) {
             // If the song is being played
             const startTime = playerState.progressMs;
             const songLyrics = lyrics[playerState.track.id].lines;
@@ -84,7 +96,7 @@ export default function Player() {
                     ? startTime - songLyrics[startIndex].startTimeMs
                     : startTime; // When the lyrics have not started in the song
 
-            offset += 475; // Manually syncing the lag
+            offset += 700; // Manually syncing the lag
 
             // Display the lyrics on the screen
             displayLyrics(startIndex, songLyrics, offset);
