@@ -115,12 +115,13 @@ export default function Player() {
             // When the lyrics have started in the song
             setLiveLyrics(songLyrics[startIndex].words);
 
-            // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
-            const timeOut =
-                songLyrics[startIndex + 1].startTimeMs -
-                songLyrics[startIndex].startTimeMs -
-                offset;
-            if (startIndex !== songLyrics.length - 2) {
+            if (startIndex <= songLyrics.length - 2) {
+                // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
+                const timeOut =
+                    songLyrics[startIndex + 1].startTimeMs -
+                    songLyrics[startIndex].startTimeMs -
+                    offset;
+
                 timeOutID = setTimeout(() => {
                     displayLyrics(startIndex + 1, songLyrics);
                 }, timeOut);
