@@ -16,6 +16,7 @@ import PlayerErrorHandler from './PlayerErrorHandler';
 let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
 let manualButtonClick = false;
+
 export default function Player() {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
@@ -26,6 +27,7 @@ export default function Player() {
     const [lyrics, setLyrics] = useState({});
     const [play, setPlay] = useState(false);
     const [liveLyrics, setLiveLyrics] = useState('');
+    const [tokenError, setTokenError] = useState(false);
 
     const scopes = [
         'streaming',
@@ -43,6 +45,7 @@ export default function Player() {
 
     const handleSetToken = () => {
         setToken(tokenText);
+        setTokenError(false);
     };
 
     const handleTokenChange = (event) => {
@@ -151,6 +154,7 @@ export default function Player() {
         setLyrics([]);
         setPlay(false);
         setLiveLyrics('');
+        setTokenError(false);
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
@@ -186,6 +190,10 @@ export default function Player() {
                 Accept: 'application/json',
             },
         });
+
+        if (response.status === 401) {
+            setTokenError(true);
+        }
 
         const data = await response.json();
 
@@ -225,6 +233,7 @@ export default function Player() {
         // Source: https://github.com/akashrchandran/spotify-lyrics-api
         const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
         const response = await fetch(url, { method: 'GET' });
+
         const lyricsData = await response.json();
 
         return lyricsData;
@@ -315,7 +324,8 @@ export default function Player() {
                     Generate Access Token
                 </Button>
             </div>
-            {token !== '' && !play ? (
+            {tokenError ? <PlayerErrorHandler /> : null}
+            {token !== '' && !play && !tokenError ? (
                 <div
                     style={{
                         display: 'flex',
