@@ -116,7 +116,6 @@ export default function Player() {
 
     const displayLyrics = (startIndex, songLyrics, offset = 0) => {
         // This function will display the lyrics on the screen
-
         if (startIndex === -1) {
             // When the lyrics have not started in the song
             setLiveLyrics('');
@@ -263,67 +262,69 @@ export default function Player() {
                     </ErrorBoundary>
                 </div>
             ) : null}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginTop: 30,
-                    columnGap: 20,
-                }}
-            >
-                <FormControl
-                    sx={{
-                        width: '25ch',
-                    }}
-                    variant="outlined"
-                >
-                    <InputLabel htmlFor="outlined-adornment-password">
-                        Spotify Access Token
-                    </InputLabel>
-                    <OutlinedInput
-                        id="outlined-adornment-password"
-                        type={showToken ? 'text' : 'password'}
-                        value={tokenText}
-                        onChange={handleTokenChange}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowToken}
-                                    onMouseDown={handleMouseUpDownToken}
-                                    onMouseUp={handleMouseUpDownToken}
-                                    edge="end"
-                                >
-                                    {showToken ? (
-                                        <VisibilityOff />
-                                    ) : (
-                                        <Visibility />
-                                    )}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        label="Spotify Access Token"
-                    />
-                </FormControl>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onClick={() => {
-                        handleSetToken();
+            {!play || tokenError ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: 30,
+                        columnGap: 20,
                     }}
                 >
-                    Launch Player
-                </Button>
-                <Button
-                    href={tokenPath}
-                    target="_blank"
-                    size="small"
-                    variant="contained"
-                >
-                    Generate Access Token
-                </Button>
-            </div>
+                    <FormControl
+                        sx={{
+                            width: '25ch',
+                        }}
+                        variant="outlined"
+                    >
+                        <InputLabel htmlFor="outlined-adornment-password">
+                            Spotify Access Token
+                        </InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            type={showToken ? 'text' : 'password'}
+                            value={tokenText}
+                            onChange={handleTokenChange}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowToken}
+                                        onMouseDown={handleMouseUpDownToken}
+                                        onMouseUp={handleMouseUpDownToken}
+                                        edge="end"
+                                    >
+                                        {showToken ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Spotify Access Token"
+                        />
+                    </FormControl>
+                    <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                            handleSetToken();
+                        }}
+                    >
+                        Launch Player
+                    </Button>
+                    <Button
+                        href={tokenPath}
+                        target="_blank"
+                        size="small"
+                        variant="contained"
+                    >
+                        Generate Access Token
+                    </Button>
+                </div>
+            ) : null}
             {tokenError ? <PlayerErrorHandler /> : null}
             {token !== '' && !play && !tokenError ? (
                 <div
@@ -371,7 +372,7 @@ export default function Player() {
                     </Button>
                 </div>
             ) : null}
-            {token !== '' && play ? (
+            {(token !== '' && play) || tokenError ? (
                 <div
                     style={{
                         display: 'flex',
