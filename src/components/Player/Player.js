@@ -154,6 +154,7 @@ export default function Player() {
         setArtistText('');
         setLyrics([]);
         setPlay(false);
+        clearTimeout(timeOutID);
         setLiveLyrics('');
         setTokenError(false);
     };
