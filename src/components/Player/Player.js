@@ -116,29 +116,31 @@ export default function Player() {
 
     const displayLyrics = (startIndex, songLyrics, offset = 0) => {
         // This function will display the lyrics on the screen
-        if (startIndex === -1) {
-            // When the lyrics have not started in the song
-            setLiveLyrics('');
+        if (play) {
+            if (startIndex === -1) {
+                // When the lyrics have not started in the song
+                setLiveLyrics('');
 
-            // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
-            const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
-            timeOutID = setTimeout(() => {
-                displayLyrics(startIndex + 1, songLyrics);
-            }, timeOut);
-        } else {
-            // When the lyrics have started in the song
-            setLiveLyrics(songLyrics[startIndex].words);
-
-            if (startIndex <= songLyrics.length - 2) {
                 // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
-                const timeOut =
-                    songLyrics[startIndex + 1].startTimeMs -
-                    songLyrics[startIndex].startTimeMs -
-                    offset;
-
+                const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
                 timeOutID = setTimeout(() => {
                     displayLyrics(startIndex + 1, songLyrics);
                 }, timeOut);
+            } else {
+                // When the lyrics have started in the song
+                setLiveLyrics(songLyrics[startIndex].words);
+
+                if (startIndex <= songLyrics.length - 2) {
+                    // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
+                    const timeOut =
+                        songLyrics[startIndex + 1].startTimeMs -
+                        songLyrics[startIndex].startTimeMs -
+                        offset;
+
+                    timeOutID = setTimeout(() => {
+                        displayLyrics(startIndex + 1, songLyrics);
+                    }, timeOut);
+                }
             }
         }
     };
@@ -391,7 +393,7 @@ export default function Player() {
                     </Button>
                 </div>
             ) : null}
-            <div>Lyrics: {liveLyrics}</div>
+            {play && !tokenError ? <div>Lyrics: {liveLyrics}</div> : null}
         </>
     );
 }
