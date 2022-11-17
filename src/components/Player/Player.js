@@ -375,6 +375,9 @@ export default function Player() {
                     </Button>
                 </div>
             ) : null}
+            <div style={{ textAlign: 'center', marginTop: 10, height: 30 }}>
+                <h3> {play && !tokenError ? liveLyrics : null}</h3>
+            </div>
             {(token !== '' && play) || tokenError ? (
                 <div
                     style={{
@@ -394,7 +397,6 @@ export default function Player() {
                     </Button>
                 </div>
             ) : null}
-            {play && !tokenError ? <div>Lyrics: {liveLyrics}</div> : null}
         </>
     );
 }
