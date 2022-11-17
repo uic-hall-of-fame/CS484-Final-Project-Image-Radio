@@ -92,12 +92,10 @@ export default function Player() {
             const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
 
             // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
-            let offset =
+            const offset =
                 startIndex !== -1
                     ? startTime - songLyrics[startIndex].startTimeMs
                     : startTime; // When the lyrics have not started in the song
-
-            offset += 700; // Manually syncing the lag
 
             // Display the lyrics on the screen
             displayLyrics(startIndex, songLyrics, offset);
