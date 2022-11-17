@@ -66,8 +66,6 @@ export default function Player() {
     };
 
     const getPlayerUpdates = (playerState) => {
-        console.log(playerState);
-
         if (timeOutID) {
             clearTimeout(timeOutID); // Stop any setTimeout if running
         }
@@ -102,6 +100,7 @@ export default function Player() {
             displayLyrics(startIndex, songLyrics, offset);
         }
     };
+
     const getStartIndex = (startTime, songLyrics) => {
         // This function will return the index of the songLyrics array from which the lyrics will start displaying on the screen
         for (let index = 0; index < songLyrics.length; index++) {
@@ -111,6 +110,7 @@ export default function Player() {
         }
         return songLyrics.length - 1;
     };
+
     const displayLyrics = (startIndex, songLyrics, offset = 0) => {
         // This function will display the lyrics on the screen
 
@@ -118,7 +118,7 @@ export default function Player() {
             // When the lyrics have not started in the song
             setLiveLyrics('');
 
-            // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
+            // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
             const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
             timeOutID = setTimeout(() => {
                 displayLyrics(startIndex + 1, songLyrics);
@@ -128,7 +128,7 @@ export default function Player() {
             setLiveLyrics(songLyrics[startIndex].words);
 
             if (startIndex <= songLyrics.length - 2) {
-                // Calcultating the timeOut in ms after which the next line of lyrics is to be displayed
+                // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
                 const timeOut =
                     songLyrics[startIndex + 1].startTimeMs -
                     songLyrics[startIndex].startTimeMs -
@@ -150,6 +150,7 @@ export default function Player() {
         setArtistText('');
         setLyrics([]);
         setPlay(false);
+        setLiveLyrics('');
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
