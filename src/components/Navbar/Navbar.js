@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
+import {
+    AppBar,
+    Box,
+    Toolbar,
+    IconButton,
+    Typography,
+    Menu,
+    Avatar,
+    Button,
+    MenuItem,
+} from '@mui/material';
 
 function Navbar({ supabase, session = null }) {
     const pages = ['About', 'Player'];
@@ -128,6 +130,22 @@ function Navbar({ supabase, session = null }) {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
+                        {session && (
+                            <div
+                                style={{
+                                    cursor: 'default',
+                                    backgroundColor: 'transparent',
+                                }}
+                                className="css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root" // MenuItem CSS class
+                            >
+                                <Typography
+                                    textAlign="center"
+                                    sx={{ fontWeight: 'bold' }}
+                                >
+                                    Hi, {session.user.user_metadata.full_name}
+                                </Typography>
+                            </div>
+                        )}
                         {settings.map((setting) => (
                             <MenuItem
                                 key={setting}
