@@ -8,7 +8,11 @@
 
 ## Link to hosted app
 
-https://image-radio.netlify.app/
+https://image-radio.netlify.app/<br/>
+
+<b>Note:</b> The Spotify Web SDK requires you to have Spotify Premium to use the Player in our application. Mentioned below is a test account with Spotify Premium activated on it -<br/>
+Username: imageradio484@gmail.com<br/>
+Password: imageradio484$*$
 
 ## What does your application do?
 
