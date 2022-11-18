@@ -48,7 +48,7 @@ export default function About() {
                 gutterBottom
                 sx={{ ml: 4 }}
             >
-                We plan to play a song and display its lyrics in a synchronous
+                We plan to play a song and display its lyrics, in a synchronous
                 manner. We will use <b>OAuth with Spotify</b> for user login.
                 After this, we will fetch the timestamped lyrics of the song and
                 play it using the <b>Spotify API</b>. <b>Supabase</b> database
