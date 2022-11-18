@@ -28,6 +28,7 @@ export default function Player() {
     const [play, setPlay] = useState(false);
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
+    const [currentSongID, setCurrentSongID] = useState(null);
 
     const scopes = [
         'streaming',
@@ -69,13 +70,27 @@ export default function Player() {
     };
 
     const getPlayerUpdates = (playerState) => {
+        console.log(playerState);
+
         if (timeOutID) {
             clearTimeout(timeOutID); // Stop any setTimeout if running
         }
         if (manualButtonClick) {
+            console.log('button clicked again');
             const play_pause_element =
                 document.getElementsByClassName('rswp__toggle');
             manualButtonClick = false;
+            play_pause_element[0].click();
+        } else if (
+            playerState.track.id !== currentSongID &&
+            playerState.type === 'player_update'
+        ) {
+            console.log('Song played for the first time');
+            setCurrentSongID(playerState.track.id);
+            const play_pause_element =
+                document.getElementsByClassName('rswp__toggle');
+
+            play_pause_element[0].click();
             play_pause_element[0].click();
         } else if (
             playerState.isPlaying &&
@@ -153,6 +168,7 @@ export default function Player() {
         clearTimeout(timeOutID);
         setLiveLyrics('');
         setTokenError(false);
+        setCurrentSongID(null);
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
