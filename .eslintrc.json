@@ -1,0 +1,28 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "react-app",
+        "airbnb",
+        "plugin:react/recommended",
+        "plugin:prettier/recommended"
+    ],
+    "overrides": [],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "plugins": ["react", "prettier"],
+    "rules": {
+        "react/jsx-filename-extension": ["off"],
+        "react/react-in-jsx-scope": ["off"],
+        "react/jsx-props-no-spreading": ["warn"],
+        "react/prop-types": ["off"],
+        "no-unused-vars": ["warn"],
+        "camelcase": ["off"],
+        "no-plusplus": ["off"],
+        "no-use-before-define": ["off"]
+    }
+}
