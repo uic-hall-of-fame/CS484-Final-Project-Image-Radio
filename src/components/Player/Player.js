@@ -28,7 +28,8 @@ export default function Player() {
     const [play, setPlay] = useState(false);
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
-    const [currentSongID, setCurrentSongID] = useState(null);
+    const [firstPlayHappened, setFirstPlayHappened] = useState(false);
+    // const [currentSongID, setCurrentSongID] = useState(null);
 
     const scopes = [
         'streaming',
@@ -70,32 +71,34 @@ export default function Player() {
     };
 
     const getPlayerUpdates = (playerState) => {
-        console.log(playerState);
-
         if (timeOutID) {
             clearTimeout(timeOutID); // Stop any setTimeout if running
         }
         if (manualButtonClick) {
-            console.log('button clicked again');
+            // After manually initiating a pause event on the music player
             const play_pause_element =
                 document.getElementsByClassName('rswp__toggle');
             manualButtonClick = false;
             play_pause_element[0].click();
-        } else if (
-            playerState.track.id !== currentSongID &&
-            playerState.type === 'player_update'
-        ) {
-            console.log('Song played for the first time');
-            setCurrentSongID(playerState.track.id);
-            const play_pause_element =
-                document.getElementsByClassName('rswp__toggle');
+        }
+        // Old way of handling lyrics sync when a new song is played
+        // else if (
+        //     playerState.track.id !== currentSongID &&
+        //     playerState.type === 'player_update'
+        // ) {
+        //     console.log('Song played for the first time');
+        //     setCurrentSongID(playerState.track.id);
+        //     const play_pause_element =
+        //         document.getElementsByClassName('rswp__toggle');
 
-            play_pause_element[0].click();
-            play_pause_element[0].click();
-        } else if (
+        //     play_pause_element[0].click();
+        //     play_pause_element[0].click();
+        // }
+        else if (
             playerState.isPlaying &&
             playerState.type === 'progress_update'
         ) {
+            // When user jumps to a new position on the player while the song is being played
             const play_pause_element =
                 document.getElementsByClassName('rswp__toggle');
             manualButtonClick = true;
@@ -107,10 +110,26 @@ export default function Player() {
             const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
 
             // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
-            const offset =
+            let offset =
                 startIndex !== -1
                     ? startTime - songLyrics[startIndex].startTimeMs
                     : startTime; // When the lyrics have not started in the song
+
+            // Manually syncing the lyrics for 2 special cases
+            if (
+                firstPlayHappened === false &&
+                playerState.type === 'player_update'
+            ) {
+                // 1st Case : First play event on the player
+                setFirstPlayHappened(true);
+                offset -= 1000;
+            } else if (
+                firstPlayHappened &&
+                playerState.type === 'track_update'
+            ) {
+                // 2nd Case : New song played on the player excluding the first case
+                offset -= 1000;
+            }
 
             // Display the lyrics on the screen
             displayLyrics(startIndex, songLyrics, offset);
@@ -168,7 +187,8 @@ export default function Player() {
         clearTimeout(timeOutID);
         setLiveLyrics('');
         setTokenError(false);
-        setCurrentSongID(null);
+        setFirstPlayHappened(false);
+        // setCurrentSongID(null);
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
