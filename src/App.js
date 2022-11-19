@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import About from './components/About/About';
@@ -37,12 +37,14 @@ function App() {
             />
             <Routes>
                 <Route
+                    exact
                     path="/"
                     element={<About />}
                 />
                 <Route
+                    exact
                     path="/player"
-                    element={session ? <Player /> : <Navigate to="/" />}
+                    element={<Player session={session} />}
                 />
             </Routes>
         </>
