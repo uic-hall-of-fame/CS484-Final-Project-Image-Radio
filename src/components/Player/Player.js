@@ -17,7 +17,7 @@ let timeOutID = null; // timeOutID variable is placed outside the component beca
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
 let manualButtonClick = false;
 
-export default function Player() {
+export default function Player({ session }) {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -284,6 +284,10 @@ export default function Player() {
         return [song_id, songLyrics];
     };
 
+    if (!session) {
+        // When user is not logged in
+        return <> </>;
+    }
     return (
         <>
             {token !== '' && play && uris.length > 0 ? (
