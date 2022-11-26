@@ -30,6 +30,14 @@ function App() {
         return data.data[0].b64_json;
     };
 
+    // For displaying images in base64 format (imagesrc is the variable containing image data in base64 format)
+    // Reference: https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html
+    // <img
+    //             src={`data:image/jpeg;base64,${imagesrc}`}
+    //             id="base64image"
+    //             alt="could not load"
+    //         />
+
     // For fetching the session when the app is run for the first time and setting up oauth change listeners
     useEffect(() => {
         // Fetch session data
