@@ -5,6 +5,7 @@ import Navbar from './components/Navbar/Navbar';
 import About from './components/About/About';
 import Player from './components/Player/Player';
 import supabase from './supabaseClient';
+import AddSongs from './components/AddSongs/AddSongs';
 
 function App() {
     const [session, setSession] = useState(null);
@@ -74,6 +75,11 @@ function App() {
                     exact
                     path="/player"
                     element={<Player session={session} />}
+                />
+                <Route
+                    exact
+                    path="/add_songs"
+                    element={<AddSongs session={session} />}
                 />
             </Routes>
         </>

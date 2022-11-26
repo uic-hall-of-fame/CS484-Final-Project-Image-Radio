@@ -13,11 +13,12 @@ import {
 } from '@mui/material';
 
 function Navbar({ supabase, session = null }) {
-    const pages = ['About', 'Player'];
+    const pages = ['About', 'Player', 'Add Songs'];
     const settings = ['Profile', 'Logout'];
     const navLinks = {
         About: '/',
         Player: '/player',
+        'Add Songs': '/add_songs',
     };
 
     const [anchorElUser, setAnchorElUser] = useState(null);
