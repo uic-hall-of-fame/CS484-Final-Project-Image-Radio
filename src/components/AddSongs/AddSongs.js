@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { TextField, Typography, Button } from '@mui/material';
+import AddProgress from './AddProgress';
 
 function AddSongs({ session, isAdmin }) {
     const [songName, setSongName] = useState('');
     const [songArtist, setSongArtist] = useState('');
+    const [addingSong, setAddingSong] = useState(false);
+
+    const onAddSongsButtonClick = () => {
+        setAddingSong(true);
+    };
 
     const onSongNameChange = (event) => {
         setSongName(event.target.value);
@@ -100,9 +106,11 @@ function AddSongs({ session, isAdmin }) {
             <Button
                 variant="contained"
                 disabled={!(songName && songArtist)}
+                onClick={onAddSongsButtonClick}
             >
                 Add Songs
             </Button>
+            {addingSong && <AddProgress />}
         </div>
     );
 }
