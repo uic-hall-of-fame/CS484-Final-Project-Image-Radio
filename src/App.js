@@ -9,6 +9,7 @@ import AddSongs from './components/AddSongs/AddSongs';
 
 function App() {
     const [session, setSession] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const fetchImage = async (imagePrompt) => {
         // References: https://beta.openai.com/docs/api-reference/images/create
@@ -41,15 +42,32 @@ function App() {
 
     // For fetching the session when the app is run for the first time and setting up oauth change listeners
     useEffect(() => {
-        // Fetch session data
+        const checkAdmin = async (user_id) => {
+            // Will check if the current user is an admin or not
+            const { data: admin, error } = await supabase
+                .from('admin')
+                .select('*');
+
+            for (let index = 0; index < admin.length; index++) {
+                if (admin[index].user_id === user_id) {
+                    setIsAdmin(true);
+                    break;
+                }
+            }
+        };
+
+        // Fetch session data the first time the application is run
         supabase.auth.getSession().then((res) => {
             setSession(res?.data.session ?? null);
+            checkAdmin(res?.data.session?.user.id);
         });
 
         // Creating listener for oauth state change
         const { data: listener } = supabase.auth.onAuthStateChange(
             (event, changedSession) => {
+                setIsAdmin(false);
                 setSession(changedSession);
+                checkAdmin(changedSession?.user.id);
             },
         );
 
@@ -79,7 +97,12 @@ function App() {
                 <Route
                     exact
                     path="/add_songs"
-                    element={<AddSongs session={session} />}
+                    element={
+                        <AddSongs
+                            session={session}
+                            isAdmin={isAdmin}
+                        />
+                    }
                 />
             </Routes>
         </>
