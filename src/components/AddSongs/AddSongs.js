@@ -1,7 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { TextField, Typography, Button } from '@mui/material';
 
-function AddSongs() {
-    return <div>AddSongs</div>;
+function AddSongs({ session }) {
+    const [songName, setSongName] = useState('');
+    const [songArtist, setSongArtist] = useState('');
+
+    const onSongNameChange = (event) => {
+        setSongName(event.target.value);
+    };
+
+    const onSongArtistChange = (event) => {
+        setSongArtist(event.target.value);
+    };
+
+    // When user is not logged in
+    if (!session) {
+        return <div> </div>;
+    }
+    return (
+        <div
+            className="container"
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 30,
+                flexDirection: 'column',
+            }}
+        >
+            <Typography
+                variant="h2"
+                gutterBottom
+            >
+                Add Songs to the Radio
+            </Typography>
+            <div
+                className="input_fields"
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    columnGap: 20,
+                    marginBottom: 20,
+                }}
+            >
+                <TextField
+                    id="outlined-basic"
+                    label="Song Name"
+                    variant="outlined"
+                    value={songName}
+                    onChange={onSongNameChange}
+                />
+
+                <TextField
+                    id="outlined-basic"
+                    label="Song Artist"
+                    variant="outlined"
+                    value={songArtist}
+                    onChange={onSongArtistChange}
+                />
+            </div>
+            <Button
+                variant="contained"
+                disabled={!(songName && songArtist)}
+            >
+                Add Songs
+            </Button>
+        </div>
+    );
 }
 
 export default AddSongs;
