@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Typography, CircularProgress } from '@mui/material';
+import supabase from '../../supabaseClient';
 
 function AddProgress({ session, songName, songArtist, setAddingSong }) {
     const [songDetails, setSongDetails] = useState({});
+    const [isSongExist, setIsSongExist] = useState(false); // Song already exist in database or not
+    const [dataLoading, setDataLoading] = useState(true);
 
     const onBackButtonClick = () => {
         setAddingSong(false);
@@ -31,6 +34,12 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                 Accept: 'application/json',
             },
         });
+
+        // Manually logging out user when session token expires
+        if (response.status === 401) {
+            supabase.auth.signOut();
+            return {}; // Returning a blank object to not let the below lines execute
+        }
 
         const data = await response.json();
 
@@ -67,10 +76,61 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
     };
 
     useState(() => {
-        getSongDetailsByNameAndArtist(songName, songArtist).then((res) => {
-            setSongDetails(res);
-        });
+        async function getSongDetails(songName, songArtist) {
+            const fetchedSongDetails = await getSongDetailsByNameAndArtist(
+                songName,
+                songArtist,
+            );
+            setSongDetails(fetchedSongDetails);
+
+            const fetchedIDs = (await supabase.from('songs').select('song_id'))
+                .data;
+
+            // Checking if the song already exists in the database
+            for (let index = 0; index < fetchedIDs.length; index++) {
+                if (fetchedIDs[index].song_id === fetchedSongDetails.song_id) {
+                    setIsSongExist(true);
+                    break;
+                }
+            }
+            setDataLoading(false);
+        }
+        getSongDetails(songName, songArtist);
     }, []);
+
+    if (dataLoading) {
+        // Don't display anything while the data is being loaded
+        return <> </>;
+    }
+    if (isSongExist) {
+        // If song already exists in the database
+        return (
+            <>
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: 30,
+                    }}
+                >
+                    <Typography
+                        variant="h2"
+                        gutterBottom
+                        color="red"
+                    >
+                        Song already exists in the database
+                    </Typography>
+                </div>
+                <Button
+                    variant="contained"
+                    onClick={onBackButtonClick}
+                >
+                    Go Back
+                </Button>
+            </>
+        );
+    }
     return (
         <>
             <div

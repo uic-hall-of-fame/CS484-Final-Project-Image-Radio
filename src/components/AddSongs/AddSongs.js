@@ -110,7 +110,7 @@ function AddSongs({ session, isAdmin }) {
                         disabled={!(songName && songArtist)}
                         onClick={onAddSongsButtonClick}
                     >
-                        Add Songs
+                        Add Song
                     </Button>
                 </>
             )}
