@@ -14,18 +14,22 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         setAddingSong(false);
     };
 
-    const generateAIImages = () => {
-        setIsImageGenerating(true);
-    };
+    const generateAIImages = async () => {
+        setIsImageGenerating(true); // Will display progress bar
 
-    const getSongLyricsByID = async (songID) => {
-        // Source: https://github.com/akashrchandran/spotify-lyrics-api
-        const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
-        const response = await fetch(url, { method: 'GET' });
-
-        const lyricsData = await response.json();
-
-        return lyricsData;
+        setStatus('Fetching song lyrics');
+        const { song_id } = songDetails;
+        const lyricsData = await getSongLyricsByID(song_id);
+        console.log(lyricsData);
+        if (lyricsData.error === true) {
+            setStatus(`Error in fetching song lyrics (${lyricsData.message})`);
+        } else if (lyricsData.syncType !== 'LINE_SYNCED') {
+            setStatus(`Synced lyrics not available for this song`);
+        } else {
+            setStatus('Fetching synced song lyrics');
+            const { lines } = lyricsData;
+            console.log(lines);
+        }
     };
 
     const fetchImage = async (imagePrompt) => {
@@ -46,7 +50,18 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             }),
         });
         const data = await response.json();
+        console.log(data);
         return data.data[0].b64_json;
+    };
+
+    const getSongLyricsByID = async (songID) => {
+        // Source: https://github.com/akashrchandran/spotify-lyrics-api
+        const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
+        const response = await fetch(url, { method: 'GET' });
+
+        const lyricsData = await response.json();
+
+        return lyricsData;
     };
 
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
@@ -75,11 +90,9 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
 
         // Manually logging out user when session token expires
         if (response.status === 401) {
-            console.log(
-                'session token expired, try running the code in the comments section',
-            );
-            // supabase.auth.signOut();
-            // document.location.href = '/';
+            // Session token expired
+            supabase.auth.signOut();
+            document.location.href = '/';
             return {}; // Returning a blank object to not let the below lines execute
         }
 
