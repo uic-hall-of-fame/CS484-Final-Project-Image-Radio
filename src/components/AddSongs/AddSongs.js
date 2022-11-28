@@ -71,7 +71,7 @@ function AddSongs({ session, isAdmin }) {
                 flexDirection: 'column',
             }}
         >
-            {!addingSong && (
+            {!addingSong ? (
                 <>
                     <Typography
                         variant="h2"
@@ -111,9 +111,7 @@ function AddSongs({ session, isAdmin }) {
                         Add Song
                     </Button>
                 </>
-            )}
-
-            {addingSong && (
+            ) : (
                 <AddProgress
                     session={session}
                     songName={songName}
