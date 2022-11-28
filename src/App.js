@@ -44,9 +44,14 @@ function App() {
         // Creating listener for oauth state change
         const { data: listener } = supabase.auth.onAuthStateChange(
             (event, changedSession) => {
-                setIsAdmin(false);
-                setSession(changedSession);
-                checkAdmin(changedSession?.user.id);
+                // onAuthStateChange was kicking even when the tab was getting switched. Setting the session everytime was rerendering the whole app. That's why we are comparing the changedSession with the existing session and only processing it if the changedSession is different from the existing session object.
+                if (
+                    JSON.stringify(session) !== JSON.stringify(changedSession)
+                ) {
+                    setIsAdmin(false);
+                    setSession(changedSession);
+                    checkAdmin(changedSession?.user.id);
+                }
             },
         );
 
