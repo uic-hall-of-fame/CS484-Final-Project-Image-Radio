@@ -5,7 +5,7 @@ import AddProgress from './AddProgress';
 function AddSongs({ session, isAdmin }) {
     const [songName, setSongName] = useState('');
     const [songArtist, setSongArtist] = useState('');
-    const [addingSong, setAddingSong] = useState(false);
+    const [addingSong, setAddingSong] = useState(false); // After addSong button is clicked, addingSong becomes true
 
     const onAddSongsButtonClick = () => {
         setAddingSong(true);
@@ -90,7 +90,6 @@ function AddSongs({ session, isAdmin }) {
                         }}
                     >
                         <TextField
-                            id="outlined-basic"
                             label="Song Name"
                             variant="outlined"
                             value={songName}
@@ -98,7 +97,6 @@ function AddSongs({ session, isAdmin }) {
                         />
 
                         <TextField
-                            id="outlined-basic"
                             label="Song Artist"
                             variant="outlined"
                             value={songArtist}
