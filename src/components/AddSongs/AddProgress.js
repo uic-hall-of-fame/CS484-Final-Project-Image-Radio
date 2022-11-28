@@ -18,6 +18,37 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         setIsImageGenerating(true);
     };
 
+    const getSongLyricsByID = async (songID) => {
+        // Source: https://github.com/akashrchandran/spotify-lyrics-api
+        const url = `https://spotify-lyric-api.herokuapp.com/?trackid=${songID}`;
+        const response = await fetch(url, { method: 'GET' });
+
+        const lyricsData = await response.json();
+
+        return lyricsData;
+    };
+
+    const fetchImage = async (imagePrompt) => {
+        // References: https://beta.openai.com/docs/api-reference/images/create
+
+        const url = 'https://api.openai.com/v1/images/generations';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+            },
+            body: JSON.stringify({
+                prompt: imagePrompt, // A text description of the desired image(s). The maximum length is 1000 characters.
+                n: 1, // The number of images to generate. Must be between 1 and 10.
+                size: '512x512', // Must be one of 256x256, 512x512, or 1024x1024 (default)
+                response_format: 'b64_json',
+            }),
+        });
+        const data = await response.json();
+        return data.data[0].b64_json;
+    };
+
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
         // The regex function is replacing mulitple spaces with a single space (https://stackoverflow.com/questions/1981349/regex-to-replace-multiple-spaces-with-a-single-space)
         const query = `${songName
@@ -44,7 +75,11 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
 
         // Manually logging out user when session token expires
         if (response.status === 401) {
-            supabase.auth.signOut();
+            console.log(
+                'session token expired, try running the code in the comments section',
+            );
+            // supabase.auth.signOut();
+            // document.location.href = '/';
             return {}; // Returning a blank object to not let the below lines execute
         }
 

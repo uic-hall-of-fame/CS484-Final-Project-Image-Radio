@@ -11,27 +11,6 @@ function App() {
     const [session, setSession] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const fetchImage = async (imagePrompt) => {
-        // References: https://beta.openai.com/docs/api-reference/images/create
-
-        const url = 'https://api.openai.com/v1/images/generations';
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                prompt: imagePrompt, // A text description of the desired image(s). The maximum length is 1000 characters.
-                n: 1, // The number of images to generate. Must be between 1 and 10.
-                size: '512x512', // Must be one of 256x256, 512x512, or 1024x1024 (default)
-                response_format: 'b64_json',
-            }),
-        });
-        const data = await response.json();
-        return data.data[0].b64_json;
-    };
-
     // For displaying images in base64 format (imagesrc is the variable containing image data in base64 format)
     // Reference: https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html
     // <img
