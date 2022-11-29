@@ -29,6 +29,77 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             setStatus('Fetching synced song lyrics');
             const { lines } = lyricsData;
             console.log(lines);
+
+            // Checking if any data for this song already exists in the database
+            const { data: song_db_data, error } = await supabase
+                .from('ai_image')
+                .select('*')
+                .eq('song_id', song_id);
+            if (error) {
+                setStatus('Error in fetching data from the database');
+            } else {
+                let existingImagesIndex = [];
+                if (song_db_data.length !== 0) {
+                    // Song data was stored in the database initially and the progress was stopped in between
+                    existingImagesIndex = song_db_data.map((db_data) => {
+                        return db_data.lyric_index;
+                    });
+                }
+                setStatus('Generating AI images');
+                let db_error = false;
+                for (let index = 0; index < lines.length; index++) {
+                    const imagePrompt = lines[index].words;
+                    if (!existingImagesIndex.includes(index)) {
+                        // The AI image for this index was not created before
+                        let image = '';
+                        if (imagePrompt !== '' && imagePrompt !== '♪') {
+                            // eslint-disable-next-line no-await-in-loop
+                            image = await fetchImage(imagePrompt);
+                        }
+
+                        // eslint-disable-next-line no-await-in-loop
+                        const { data, error } = await supabase
+                            .from('ai_image')
+                            .insert([
+                                {
+                                    song_id,
+                                    lyric_index: index,
+                                    image,
+                                },
+                            ]);
+                        if (error) {
+                            db_error = true;
+                            console.log(`error at index:${index}`);
+                        }
+                        setProgress(Math.floor((index / lines.length) * 100)); // Not doing index+1 because we don't want the progress to reach 100% yet
+                    }
+                }
+                setStatus('Checking Database status');
+                if (db_error) {
+                    setProgress(
+                        'There was some error in uploading AI images for some lyrics lines',
+                    );
+                } else {
+                    const { data, error } = await supabase
+                        .from('songs')
+                        .insert([
+                            {
+                                song_id,
+                                song_name: `${songDetails.song_name} by ${songDetails.artistString}`,
+                            },
+                        ]);
+                    if (error) {
+                        setStatus(
+                            'AI images uploaded but the song not added in the songs list in the database',
+                        );
+                    } else {
+                        setStatus(
+                            'AI images successfully uploaded in the database',
+                        );
+                        setProgress(100);
+                    }
+                }
+            }
         }
     };
 
