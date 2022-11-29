@@ -38,15 +38,11 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             if (error) {
                 setStatus('Error in fetching data from the database');
             } else {
-                let existingImagesIndex = [];
-                if (song_db_data.length !== 0) {
-                    // Song data was stored in the database initially and the progress was stopped in between
-                    existingImagesIndex = song_db_data.map((db_data) => {
-                        return db_data.lyric_index;
-                    });
-                }
+                const existingImagesIndex = song_db_data.map((db_data) => {
+                    return db_data.lyric_index;
+                });
                 setStatus('Generating AI images');
-                let db_error = false;
+                let db_error = false; // if any error is thrown while inserting any row in the database
                 for (let index = 0; index < lines.length; index++) {
                     const imagePrompt = lines[index].words;
                     if (!existingImagesIndex.includes(index)) {
