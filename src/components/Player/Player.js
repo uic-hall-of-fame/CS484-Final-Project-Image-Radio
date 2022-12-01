@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
     FormControl,
@@ -13,6 +13,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
 import RadioPlaylist from './RadioPlaylist';
+import supabase from '../../supabaseClient';
 
 let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
@@ -30,7 +31,7 @@ export default function Player({ session }) {
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
     const [firstPlayHappened, setFirstPlayHappened] = useState(false);
-    // const [currentSongID, setCurrentSongID] = useState(null);
+    const [playlist, setPlaylist] = useState(null);
 
     const scopes = [
         'streaming',
@@ -70,6 +71,30 @@ export default function Player({ session }) {
     const handleArtistChange = (event) => {
         setArtistText(event.target.value);
     };
+
+    useEffect(() => {
+        // Send user to homepage upon browser page refresh
+        if (!session) {
+            document.location.href = '/';
+        }
+
+        async function getPlaylist() {
+            const fetchedSongsFromDB = (
+                await supabase.from('songs').select('song_id')
+            ).data;
+
+            const fetchedPlaylist = await Promise.all(
+                fetchedSongsFromDB.map(async (song) => {
+                    const songDetails = await getSongDetailsByID(song.song_id);
+                    return songDetails;
+                }),
+            );
+
+            setPlaylist(fetchedPlaylist);
+        }
+
+        getPlaylist();
+    }, []);
 
     const getPlayerUpdates = (playerState) => {
         if (timeOutID) {
@@ -202,8 +227,8 @@ export default function Player({ session }) {
         setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
     };
 
-    const getSongDetailsByID = async () => {
-        const url = `https://api.spotify.com/v1/tracks/6RUKPb4LETWmmr3iAEQktW`;
+    const getSongDetailsByID = async (id) => {
+        const url = `https://api.spotify.com/v1/tracks/${id}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -234,13 +259,12 @@ export default function Player({ session }) {
             }`;
         }
 
-        const res = {
+        return {
             song_id: data.id,
             song_name: data.name,
             artist_name: artistString,
             album_image: data.album.images[0].url,
         };
-        console.log(res);
     };
 
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
@@ -261,7 +285,7 @@ export default function Player({ session }) {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${session.provider_token}`,
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
@@ -326,6 +350,10 @@ export default function Player({ session }) {
         return [song_id, songLyrics];
     };
 
+    if (!session) {
+        // When user is not logged in
+        return <> </>;
+    }
     return (
         <>
             {token !== '' && play && uris.length > 0 ? (
@@ -397,7 +425,6 @@ export default function Player({ session }) {
                         target="_blank"
                         size="small"
                         variant="contained"
-                        onClick={getSongDetailsByID}
                     >
                         Generate Access Token
                     </Button>
@@ -472,7 +499,7 @@ export default function Player({ session }) {
                     </Button>
                 </div>
             ) : null}
-            <RadioPlaylist />
+            <RadioPlaylist playlist={playlist} />
         </>
     );
 }
