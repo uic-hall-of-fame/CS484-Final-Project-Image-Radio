@@ -10,6 +10,14 @@ import AddSongs from './components/AddSongs/AddSongs';
 function App() {
     const [session, setSession] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [sessionCopy, setSessionCopy] = useState(null);
+    /* 
+    We have created this state variable because of the following reasons:
+    # onAuthStateChange listener fires up even during tab changes.
+    # We can't directly read state variables in useEffect. 
+    # We can access them by using callback function in setState but in that case we will have to compulsorily setState. Doing this with "session" state will rerender the whole app.
+    # Inside this callback function we will check if the session returned by the onAuthChangeListener is different. If it is found to be different, then only we will set "session" state inside the callback function.
+    */
 
     // For displaying images in base64 format (imagesrc is the variable containing image data in base64 format)
     // Reference: https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html
@@ -26,33 +34,45 @@ function App() {
             const { data: admin, error } = await supabase
                 .from('admin')
                 .select('*');
-
+            let adminFound = false;
             for (let index = 0; index < admin.length; index++) {
                 if (admin[index].user_id === user_id) {
                     setIsAdmin(true);
+                    adminFound = true;
                     break;
                 }
+            }
+            if (!adminFound) {
+                setIsAdmin(false);
             }
         };
 
         // Fetch session data the first time the application is run
         supabase.auth.getSession().then((res) => {
             setSession(res?.data.session ?? null);
+            setSessionCopy(res?.data.session ?? null);
             checkAdmin(res?.data.session?.user.id);
         });
 
         // Creating listener for oauth state change
         const { data: listener } = supabase.auth.onAuthStateChange(
             (event, changedSession) => {
-                // onAuthStateChange was kicking even when the tab was getting switched. Setting the session everytime was rerendering the whole app. That's why we are comparing the changedSession with the existing session and only processing it if the changedSession is different from the existing session object.
-                if (
-                    changedSession == null ||
-                    JSON.stringify(session) !== JSON.stringify(changedSession)
-                ) {
-                    setIsAdmin(false);
-                    setSession(changedSession);
-                    checkAdmin(changedSession?.user.id);
-                }
+                setSessionCopy((sessionCopy) => {
+                    if (
+                        JSON.stringify(changedSession) !==
+                        JSON.stringify(sessionCopy)
+                    ) {
+                        // There has been a change in spotify session
+                        setSession(changedSession);
+
+                        if (changedSession) {
+                            checkAdmin(changedSession?.user.id);
+                        } else {
+                            setIsAdmin(false);
+                        }
+                    }
+                    return changedSession;
+                });
             },
         );
 
