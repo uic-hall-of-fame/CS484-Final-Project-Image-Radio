@@ -117,7 +117,15 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             }),
         });
         const data = await response.json();
-        console.log(data);
+        if (
+            data?.error?.message ===
+            'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.'
+        ) {
+            setStatus(
+                `safety error: Not generating image for the lyric line "${imagePrompt}"`,
+            );
+            return '';
+        }
         return data.data[0].b64_json;
     };
 
