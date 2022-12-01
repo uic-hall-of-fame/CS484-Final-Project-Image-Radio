@@ -31,7 +31,7 @@ export default function Player({ session }) {
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
     const [firstPlayHappened, setFirstPlayHappened] = useState(false);
-    const [playlist, setPlaylist] = useState(null);
+    const [playlist, setPlaylist] = useState([]);
 
     const scopes = [
         'streaming',
@@ -86,7 +86,7 @@ export default function Player({ session }) {
             const fetchedPlaylist = await Promise.all(
                 fetchedSongsFromDB.map(async (song) => {
                     const songDetails = await getSongDetailsByID(song.song_id);
-                    return songDetails;
+                    return { ...songDetails, isSelected: false };
                 }),
             );
 
@@ -499,7 +499,18 @@ export default function Player({ session }) {
                     </Button>
                 </div>
             ) : null}
-            <RadioPlaylist playlist={playlist} />
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <RadioPlaylist
+                    playlist={playlist}
+                    setPlaylist={setPlaylist}
+                />
+            </div>
         </>
     );
 }
