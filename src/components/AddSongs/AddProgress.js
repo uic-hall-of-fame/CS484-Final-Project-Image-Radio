@@ -7,7 +7,8 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
     const [isSongExist, setIsSongExist] = useState(false); // Song already exists in database or not
     const [dataLoading, setDataLoading] = useState(true); // When waiting for responses from supabase and spotify api in useEffect
     const [progress, setProgress] = useState(0); // For progress bar on the frontend
-    const [isImageGenerating, setIsImageGenerating] = useState(false); // When the api calls to openai api is taking place
+    const [displayProgressBar, setDisplayProgressBar] = useState(false); // When the api calls to openai api are taking place and progress is to be shown
+    const [isImageGenerating, setIsImageGenerating] = useState(false); // When the api calls to openai api are taking place and back button is to be disabled
     const [status, setStatus] = useState('');
 
     const onBackButtonClick = () => {
@@ -15,7 +16,8 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
     };
 
     const generateAIImages = async () => {
-        setIsImageGenerating(true); // Will display progress bar
+        setDisplayProgressBar(true); // Will display progress bar
+        setIsImageGenerating(true);
 
         setStatus('Fetching song lyrics');
         const { song_id } = songDetails;
@@ -31,16 +33,36 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             console.log(lines);
 
             // Checking if any data for this song already exists in the database
-            const { data: song_db_data, error } = await supabase
-                .from('ai_image')
-                .select('*')
-                .eq('song_id', song_id);
+            const promise_array = [];
+            for (let index = 0; index < lines.length; index++) {
+                promise_array.push(
+                    supabase
+                        .from('ai_image')
+                        .select('*')
+                        .eq('song_id', song_id)
+                        .eq('lyric_index', index),
+                );
+            }
+            let error = false;
+            const song_db_data = await Promise.all(promise_array);
+            console.log(song_db_data);
+            const existingImagesIndex = [];
+            for (let index = 0; index < song_db_data.length; index++) {
+                if (song_db_data[index].error) {
+                    error = song_db_data[index].value.error;
+                    break;
+                }
+                if (song_db_data[index].data.length) {
+                    existingImagesIndex.push(
+                        song_db_data[index].data[0].lyric_index,
+                    );
+                }
+            }
+            console.log(existingImagesIndex);
+
             if (error) {
                 setStatus('Error in fetching data from the database');
             } else {
-                const existingImagesIndex = song_db_data.map((db_data) => {
-                    return db_data.lyric_index;
-                });
                 setStatus('Generating AI images');
                 let db_error = false; // if any error is thrown while inserting any row in the database
                 for (let index = 0; index < lines.length; index++) {
@@ -52,7 +74,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                             // eslint-disable-next-line no-await-in-loop
                             image = await fetchImage(imagePrompt);
                         }
-
                         // eslint-disable-next-line no-await-in-loop
                         const { data, error } = await supabase
                             .from('ai_image')
@@ -97,6 +118,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                 }
             }
         }
+        setIsImageGenerating(false);
     };
 
     const fetchImage = async (imagePrompt) => {
@@ -279,7 +301,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                 alt="Album pic not available"
                 style={{ marginTop: 15 }}
             />
-            {!isImageGenerating ? (
+            {!displayProgressBar ? (
                 <Button
                     variant="contained"
                     onClick={generateAIImages}
@@ -299,8 +321,9 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             <Button
                 variant="contained"
                 onClick={onBackButtonClick}
+                disabled={isImageGenerating}
             >
-                Cancel/Go Back
+                Go Back
             </Button>
         </>
     );
