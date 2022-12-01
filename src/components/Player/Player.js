@@ -18,7 +18,7 @@ let timeOutID = null; // timeOutID variable is placed outside the component beca
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
 let manualButtonClick = false;
 
-export default function Player() {
+export default function Player({ session }) {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -202,6 +202,47 @@ export default function Player() {
         setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
     };
 
+    const getSongDetailsByID = async () => {
+        const url = `https://api.spotify.com/v1/tracks/6RUKPb4LETWmmr3iAEQktW`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${session.provider_token}`,
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+
+        if (response.status === 401) {
+            setTokenError(true);
+        }
+
+        const data = await response.json();
+
+        let artistString = data.artists[0].name; // First artist of the song
+
+        // Intermediate artists of the song separated by commas
+        for (let i = 1; i < data.artists.length - 1; i++) {
+            artistString = `${artistString}, ${data.artists[i].name}`;
+        }
+
+        // Last artist of the song displayed after & (When multiple song artists present)
+        if (data.artists.length > 1) {
+            artistString = `${artistString} & ${
+                data.artists[data.artists.length - 1].name
+            }`;
+        }
+
+        const res = {
+            song_id: data.id,
+            song_name: data.name,
+            artist_name: artistString,
+            album_image: data.album.images[0].url,
+        };
+        console.log(res);
+    };
+
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
         // The regex function is replacing mulitple spaces with a single space (https://stackoverflow.com/questions/1981349/regex-to-replace-multiple-spaces-with-a-single-space)
         const query = `${songName
@@ -220,7 +261,7 @@ export default function Player() {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.provider_token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
@@ -356,6 +397,7 @@ export default function Player() {
                         target="_blank"
                         size="small"
                         variant="contained"
+                        onClick={getSongDetailsByID}
                     >
                         Generate Access Token
                     </Button>
