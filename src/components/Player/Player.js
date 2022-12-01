@@ -12,12 +12,13 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
+import RadioPlaylist from './RadioPlaylist';
 
 let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
 let manualButtonClick = false;
 
-export default function Player({ session }) {
+export default function Player() {
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -284,10 +285,6 @@ export default function Player({ session }) {
         return [song_id, songLyrics];
     };
 
-    if (!session) {
-        // When user is not logged in
-        return <> </>;
-    }
     return (
         <>
             {token !== '' && play && uris.length > 0 ? (
@@ -433,6 +430,7 @@ export default function Player({ session }) {
                     </Button>
                 </div>
             ) : null}
+            <RadioPlaylist />
         </>
     );
 }
