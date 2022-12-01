@@ -17,7 +17,7 @@ export default function RadioPlaylist({ playlist, setPlaylist }) {
                               borderBottom: 1,
                               borderTop: 1,
                               borderColor: 'lightgray',
-                              background: song.isSelected ? 'lightgray' : null,
+                              background: song.isSelected ? 'lightgreen' : null,
                               opacity: song.isSelected ? '50%' : '100%',
                           }}
                           onClick={() => {
