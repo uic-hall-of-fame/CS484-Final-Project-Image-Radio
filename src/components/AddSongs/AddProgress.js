@@ -101,7 +101,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
 
     const fetchImage = async (imagePrompt) => {
         // References: https://beta.openai.com/docs/api-reference/images/create
-
         const url = 'https://api.openai.com/v1/images/generations';
         const response = await fetch(url, {
             method: 'POST',
@@ -119,7 +118,9 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         const data = await response.json();
         if (
             data?.error?.message ===
-            'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.'
+                'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.' ||
+            data?.error?.message ===
+                'Your request was rejected as a result of our safety system. '
         ) {
             setStatus(
                 `safety error: Not generating image for the lyric line "${imagePrompt}"`,
