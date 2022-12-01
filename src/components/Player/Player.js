@@ -213,16 +213,25 @@ export default function Player({ session }) {
         );
 
         const noOfLines = songLyrics.lines.length;
-        let song_images = [];
+
+        const promise_array = [];
         for (let index = 0; index < noOfLines; index++) {
-            // eslint-disable-next-line no-await-in-loop
-            const { data: ai_image_db_data, error } = await supabase
-                .from('ai_image')
-                .select('*')
-                .eq('song_id', songID)
-                .eq('lyric_index', index);
-            song_images = [...song_images, ai_image_db_data[0].image];
+            promise_array.push(
+                supabase
+                    .from('ai_image')
+                    .select('*')
+                    .eq('song_id', songID)
+                    .eq('lyric_index', index),
+            );
         }
+        const ai_image_db_data = await Promise.allSettled(promise_array);
+        let song_images = [];
+        song_images = Array(noOfLines).fill('');
+        ai_image_db_data.forEach((db_data) => {
+            song_images[db_data.value.data[0].lyric_index] =
+                db_data.value.data[0].image;
+        });
+
         setUris([...uris, `spotify:track:${songID}`]);
         setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
         setImages({ ...images, [songID]: song_images });
