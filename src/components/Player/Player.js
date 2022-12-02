@@ -7,7 +7,6 @@ import {
     InputAdornment,
     IconButton,
     Button,
-    TextField,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
@@ -22,7 +21,7 @@ let manualButtonClick = false;
 export default function Player({ session }) {
     // https://png-pixel.com/ : For getting 512X512/256X256 blank image
     const white_image_base64 =
-        'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAQAAAD2e2DtAAABm0lEQVR42u3SMQEAAAgDINc/9LxMIWQg7fBYBBAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARBAAAEEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEEEAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARCAs6Mk/xDKKakhAAAAAElFTkSuQmCC';
+        'iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAQAAAAqtv5HAAAC5klEQVR42u3TAQ0AAAgDIN8/9E1gADfoQNoBDhEEBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAUEEAUFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQUAQQUAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBAQRBAQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEBBEEBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBASB/xY6FR6eFAUeggAAAABJRU5ErkJggg==';
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -277,7 +276,6 @@ export default function Player({ session }) {
                     db_data.value.data[0].image;
             });
 
-            // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
             setUris((uri) => {
                 return [...uri, `spotify:track:${songID}`];
             });
@@ -438,7 +436,9 @@ export default function Player({ session }) {
                             <img
                                 src={`data:image/jpeg;base64,${liveImages}`}
                                 id="base64image"
-                                alt="could not load"
+                                height="400px"
+                                width="400px"
+                                alt="Failed to load"
                             />
                         </div>
                         <MusicPlayer
@@ -557,8 +557,8 @@ export default function Player({ session }) {
                         }}
                         disabled={
                             loading ||
-                            playlist.filter((play) => {
-                                return play.isSelected;
+                            playlist.filter((song) => {
+                                return song.isSelected;
                             }).length === 0
                         }
                     >
