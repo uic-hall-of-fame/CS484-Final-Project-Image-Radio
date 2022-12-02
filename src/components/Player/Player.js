@@ -27,8 +27,6 @@ export default function Player({ session }) {
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
     const [uris, setUris] = useState([]);
-    const [songText, setSongText] = useState('');
-    const [artistText, setArtistText] = useState('');
     const [lyrics, setLyrics] = useState({});
     const [play, setPlay] = useState(false);
     const [liveLyrics, setLiveLyrics] = useState('');
@@ -68,14 +66,6 @@ export default function Player({ session }) {
 
     const handleMouseUpDownToken = (event) => {
         event.preventDefault();
-    };
-
-    const handleSongChange = (event) => {
-        setSongText(event.target.value);
-    };
-
-    const handleArtistChange = (event) => {
-        setArtistText(event.target.value);
     };
 
     useEffect(() => {
@@ -217,8 +207,6 @@ export default function Player({ session }) {
         setTokenText('');
         setShowToken(false);
         setUris([]);
-        setSongText('');
-        setArtistText('');
         setLyrics([]);
         setPlay(false);
         clearTimeout(timeOutID);
@@ -229,37 +217,46 @@ export default function Player({ session }) {
         setLiveImages(white_image_base64);
     };
 
-    const addSongUriAndLyrics = async (songName, songArtist) => {
+    const addSongUriAndLyrics = async () => {
         setLoading(true);
-        const [songID, songLyrics] = await getIdAndLyricsByNameAndArtist(
-            songName,
-            songArtist,
+
+        const selectedSongs = playlist.filter(
+            (song) => song.isSelected === true,
         );
 
-        const noOfLines = songLyrics.lines.length;
+        for (let i = 0; i < selectedSongs.length; i++) {
+            const songID = selectedSongs[i].song_id;
 
-        const promise_array = [];
-        for (let index = 0; index < noOfLines; index++) {
-            promise_array.push(
-                supabase
-                    .from('ai_image')
-                    .select('*')
-                    .eq('song_id', songID)
-                    .eq('lyric_index', index),
-            );
+            // eslint-disable-next-line no-await-in-loop
+            const songLyrics = await getSongLyricsByID(songID);
+
+            const noOfLines = songLyrics.lines.length;
+
+            const promise_array = [];
+            for (let index = 0; index < noOfLines; index++) {
+                promise_array.push(
+                    supabase
+                        .from('ai_image')
+                        .select('*')
+                        .eq('song_id', songID)
+                        .eq('lyric_index', index),
+                );
+            }
+
+            // eslint-disable-next-line no-await-in-loop
+            const ai_image_db_data = await Promise.allSettled(promise_array);
+            let song_images = [];
+            song_images = Array(noOfLines).fill('');
+            ai_image_db_data.forEach((db_data) => {
+                song_images[db_data.value.data[0].lyric_index] =
+                    db_data.value.data[0].image;
+            });
+
+            setUris([...uris, `spotify:track:${songID}`]);
+            setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
+            setImages({ ...images, [songID]: song_images });
+            setLoading(false);
         }
-        const ai_image_db_data = await Promise.allSettled(promise_array);
-        let song_images = [];
-        song_images = Array(noOfLines).fill('');
-        ai_image_db_data.forEach((db_data) => {
-            song_images[db_data.value.data[0].lyric_index] =
-                db_data.value.data[0].image;
-        });
-
-        setUris([...uris, `spotify:track:${songID}`]);
-        setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
-        setImages({ ...images, [songID]: song_images });
-        setLoading(false);
     };
 
     const getSongDetailsByID = async (id) => {
@@ -507,6 +504,7 @@ export default function Player({ session }) {
                 <div
                     style={{
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}
@@ -515,6 +513,19 @@ export default function Player({ session }) {
                         playlist={playlist}
                         setPlaylist={setPlaylist}
                     />
+                    <Button
+                        variant="contained"
+                        size="small"
+                        sx={{ mt: 5, mb: 20 }}
+                        onClick={() => {
+                            addSongUriAndLyrics();
+                            if (uris.length > 0) {
+                                setPlay(true);
+                            }
+                        }}
+                    >
+                        Play Songs
+                    </Button>
                 </div>
             ) : null}
         </>

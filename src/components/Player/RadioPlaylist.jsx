@@ -25,7 +25,6 @@ export default function RadioPlaylist({ playlist, setPlaylist }) {
                               modifiedPlaylist[index].isSelected =
                                   !modifiedPlaylist[index].isSelected;
                               setPlaylist(modifiedPlaylist);
-                              console.log(playlist);
                           }}
                       >
                           <ListItemAvatar>
