@@ -227,7 +227,6 @@ export default function Player({ session }) {
         setFirstPlayHappened(false);
         setImages({});
         setLiveImages(white_image_base64);
-        // setCurrentSongID(null);
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
@@ -482,54 +481,6 @@ export default function Player({ session }) {
                 </div>
             ) : null}
             {tokenError ? <PlayerErrorHandler /> : null}
-            {token !== '' && !play && !tokenError ? (
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: 30,
-                        columnGap: 20,
-                    }}
-                >
-                    <TextField
-                        label="Song Name"
-                        variant="outlined"
-                        value={songText}
-                        onChange={handleSongChange}
-                    />
-                    <TextField
-                        label="Artist Name"
-                        variant="outlined"
-                        value={artistText}
-                        onChange={handleArtistChange}
-                    />
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => {
-                            setSongText('');
-                            setArtistText('');
-                            addSongUriAndLyrics(songText, artistText);
-                        }}
-                        disabled={loading}
-                    >
-                        Add Song to Queue
-                    </Button>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => {
-                            if (uris.length > 0) {
-                                setPlay(true);
-                            }
-                        }}
-                        disabled={loading}
-                    >
-                        Play Songs
-                    </Button>
-                </div>
-            ) : null}
             <div style={{ textAlign: 'center', marginTop: 10, height: 30 }}>
                 <h3> {play && !tokenError ? liveLyrics : null}</h3>
             </div>
@@ -552,18 +503,20 @@ export default function Player({ session }) {
                     </Button>
                 </div>
             ) : null}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
-            >
-                <RadioPlaylist
-                    playlist={playlist}
-                    setPlaylist={setPlaylist}
-                />
-            </div>
+            {token !== '' && !play && !tokenError ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <RadioPlaylist
+                        playlist={playlist}
+                        setPlaylist={setPlaylist}
+                    />
+                </div>
+            ) : null}
         </>
     );
 }
