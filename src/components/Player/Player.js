@@ -20,6 +20,9 @@ let timeOutID = null; // timeOutID variable is placed outside the component beca
 let manualButtonClick = false;
 
 export default function Player({ session }) {
+    // https://png-pixel.com/ : For getting 512X512 blank image
+    const white_image_base64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAQAAABecRxxAAAEnklEQVR42u3UMQEAAAjDMOZf9JCAABIJPZp2gKdiAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYABiAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAIoABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYABiAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAABgAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABiAAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAGAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABwW1Dy/i5f+lAuAAAAAElFTkSuQmCC';
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -31,6 +34,9 @@ export default function Player({ session }) {
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
     const [firstPlayHappened, setFirstPlayHappened] = useState(false);
+    const [images, setImages] = useState({});
+    const [liveImages, setLiveImages] = useState(white_image_base64);
+    const [loading, setLoading] = useState(false);
     const [playlist, setPlaylist] = useState([]);
 
     const scopes = [
@@ -133,6 +139,7 @@ export default function Player({ session }) {
             // If the song is being played
             const startTime = playerState.progressMs;
             const songLyrics = lyrics[playerState.track.id].lines;
+            const songImages = images[playerState.track.id];
             const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
 
             // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
@@ -158,7 +165,7 @@ export default function Player({ session }) {
             }
 
             // Display the lyrics on the screen
-            displayLyrics(startIndex, songLyrics, offset);
+            displayLyrics(startIndex, songLyrics, songImages, offset);
         }
     };
 
@@ -172,20 +179,24 @@ export default function Player({ session }) {
         return songLyrics.length - 1;
     };
 
-    const displayLyrics = (startIndex, songLyrics, offset = 0) => {
+    const displayLyrics = (startIndex, songLyrics, songImages, offset = 0) => {
         // This function will display the lyrics on the screen
         if (startIndex === -1) {
             // When the lyrics have not started in the song
             setLiveLyrics('');
+            setLiveImages(songImages[0]);
 
             // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
             const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
             timeOutID = setTimeout(() => {
-                displayLyrics(startIndex + 1, songLyrics);
+                displayLyrics(startIndex + 1, songLyrics, songImages);
             }, timeOut);
         } else {
             // When the lyrics have started in the song
             setLiveLyrics(songLyrics[startIndex].words);
+            if (songImages[startIndex] !== '') {
+                setLiveImages(songImages[startIndex]);
+            }
 
             if (startIndex <= songLyrics.length - 2) {
                 // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
@@ -195,7 +206,7 @@ export default function Player({ session }) {
                     offset;
 
                 timeOutID = setTimeout(() => {
-                    displayLyrics(startIndex + 1, songLyrics);
+                    displayLyrics(startIndex + 1, songLyrics, songImages);
                 }, timeOut);
             }
         }
@@ -214,17 +225,42 @@ export default function Player({ session }) {
         setLiveLyrics('');
         setTokenError(false);
         setFirstPlayHappened(false);
+        setImages({});
+        setLiveImages(white_image_base64);
         // setCurrentSongID(null);
     };
 
     const addSongUriAndLyrics = async (songName, songArtist) => {
+        setLoading(true);
         const [songID, songLyrics] = await getIdAndLyricsByNameAndArtist(
             songName,
             songArtist,
         );
 
+        const noOfLines = songLyrics.lines.length;
+
+        const promise_array = [];
+        for (let index = 0; index < noOfLines; index++) {
+            promise_array.push(
+                supabase
+                    .from('ai_image')
+                    .select('*')
+                    .eq('song_id', songID)
+                    .eq('lyric_index', index),
+            );
+        }
+        const ai_image_db_data = await Promise.allSettled(promise_array);
+        let song_images = [];
+        song_images = Array(noOfLines).fill('');
+        ai_image_db_data.forEach((db_data) => {
+            song_images[db_data.value.data[0].lyric_index] =
+                db_data.value.data[0].image;
+        });
+
         setUris([...uris, `spotify:track:${songID}`]);
         setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
+        setImages({ ...images, [songID]: song_images });
+        setLoading(false);
     };
 
     const getSongDetailsByID = async (id) => {
@@ -357,8 +393,23 @@ export default function Player({ session }) {
     return (
         <>
             {token !== '' && play && uris.length > 0 ? (
-                <div style={{ marginTop: 50, marginBottom: 30 }}>
+                <div style={{ marginTop: 10, marginBottom: 30 }}>
                     <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 10,
+                            }}
+                        >
+                            {/* Reference: https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html */}
+                            <img
+                                src={`data:image/jpeg;base64,${liveImages}`}
+                                id="base64image"
+                                alt="could not load"
+                            />
+                        </div>
                         <MusicPlayer
                             token={token}
                             callback={getPlayerUpdates}
@@ -461,6 +512,7 @@ export default function Player({ session }) {
                             setArtistText('');
                             addSongUriAndLyrics(songText, artistText);
                         }}
+                        disabled={loading}
                     >
                         Add Song to Queue
                     </Button>
@@ -472,6 +524,7 @@ export default function Player({ session }) {
                                 setPlay(true);
                             }
                         }}
+                        disabled={loading}
                     >
                         Play Songs
                     </Button>
