@@ -463,10 +463,19 @@ export default function Player({ session }) {
                     <FormControl
                         sx={{
                             width: '25ch',
+                            border: '0.1px solid white',
+                            '& .MuiOutlinedInput-root.Mui-focused': {
+                                '& > fieldset': {
+                                    border: 'none',
+                                },
+                            },
                         }}
                         variant="outlined"
                     >
-                        <InputLabel htmlFor="outlined-adornment-password">
+                        <InputLabel
+                            htmlFor="outlined-adornment-password"
+                            sx={{ backgroundColor: 'black' }}
+                        >
                             Spotify Access Token
                         </InputLabel>
                         <OutlinedInput
@@ -482,6 +491,7 @@ export default function Player({ session }) {
                                         onMouseDown={handleMouseUpDownToken}
                                         onMouseUp={handleMouseUpDownToken}
                                         edge="end"
+                                        sx={{ color: 'white' }}
                                     >
                                         {showToken ? (
                                             <VisibilityOff />
