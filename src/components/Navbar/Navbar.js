@@ -63,7 +63,7 @@ function Navbar({ supabase, session = null }) {
                         mr: 2,
                         ml: 1,
                         display: { xs: 'none', md: 'flex' },
-                        color: 'inherit',
+                        color: 'white',
                         textDecoration: 'none',
                     }}
                 >

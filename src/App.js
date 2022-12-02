@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import Navbar from './components/Navbar/Navbar';
 import About from './components/About/About';
 import Player from './components/Player/Player';
 import supabase from './supabaseClient';
 import AddSongs from './components/AddSongs/AddSongs';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#1db954',
+            contrastText: 'white',
+        },
+    },
+});
 
 function App() {
     const [session, setSession] = useState(null);
@@ -75,7 +86,8 @@ function App() {
     }, []);
 
     return (
-        <>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
             <Navbar
                 supabase={supabase}
                 session={session}
@@ -102,7 +114,7 @@ function App() {
                     }
                 />
             </Routes>
-        </>
+        </ThemeProvider>
     );
 }
 
