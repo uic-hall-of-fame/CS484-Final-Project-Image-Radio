@@ -117,6 +117,11 @@ function Navbar({ supabase, session = null }) {
                     </IconButton>
                     <Menu
                         sx={{ mt: '45px' }}
+                        PaperProps={{
+                            style: {
+                                width: 200,
+                            },
+                        }}
                         id="menu-appbar"
                         anchorEl={anchorElUser}
                         anchorOrigin={{
@@ -132,20 +137,11 @@ function Navbar({ supabase, session = null }) {
                         onClose={handleCloseUserMenu}
                     >
                         {session && (
-                            <div
-                                style={{
-                                    cursor: 'default',
-                                    backgroundColor: 'transparent',
-                                }}
-                                className="css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root" // MenuItem CSS class
-                            >
-                                <Typography
-                                    textAlign="center"
-                                    sx={{ fontWeight: 'bold' }}
-                                >
+                            <MenuItem style={{ pointerEvents: 'none' }}>
+                                <Typography sx={{ fontWeight: 'bold' }}>
                                     Hi, {session.user.user_metadata.full_name}
                                 </Typography>
-                            </div>
+                            </MenuItem>
                         )}
                         {settings.map((setting) => (
                             <MenuItem
