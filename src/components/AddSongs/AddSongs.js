@@ -51,7 +51,7 @@ function AddSongs({ session, isAdmin }) {
                 }}
             >
                 <Typography
-                    variant="h2"
+                    variant="h5"
                     gutterBottom
                     color="red"
                 >

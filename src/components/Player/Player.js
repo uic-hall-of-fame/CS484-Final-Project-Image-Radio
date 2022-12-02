@@ -7,6 +7,7 @@ import {
     InputAdornment,
     IconButton,
     Button,
+    Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import MusicPlayer from './MusicPlayer';
@@ -544,6 +545,9 @@ export default function Player({ session }) {
                         justifyContent: 'center',
                     }}
                 >
+                    <Typography variant="overline">
+                        <b>Listen to songs from our radio playlist</b>
+                    </Typography>
                     <RadioPlaylist
                         playlist={playlist}
                         setPlaylist={setPlaylist}
