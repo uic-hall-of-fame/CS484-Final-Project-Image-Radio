@@ -20,9 +20,9 @@ let timeOutID = null; // timeOutID variable is placed outside the component beca
 let manualButtonClick = false;
 
 export default function Player({ session }) {
-    // https://png-pixel.com/ : For getting 512X512 blank image
+    // https://png-pixel.com/ : For getting 512X512/256X256 blank image
     const white_image_base64 =
-        'iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAQAAABecRxxAAAEnklEQVR42u3UMQEAAAjDMOZf9JCAABIJPZp2gKdiAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYABiAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAIoABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYABiAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAGAABgAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABiAAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAEABgAYAGAAgAGAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAQAGABgAYACAAYABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABgAIABAAYAGABwW1Dy/i5f+lAuAAAAAElFTkSuQmCC';
+        'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAQAAAD2e2DtAAABm0lEQVR42u3SMQEAAAgDINc/9LxMIWQg7fBYBBAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARBAAAEEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEQAAEEEAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARAAARCAs6Mk/xDKKakhAAAAAElFTkSuQmCC';
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -244,6 +244,18 @@ export default function Player({ session }) {
 
             const noOfLines = songLyrics.lines.length;
 
+            // let song_images = [];
+            // for (let index = 0; index < noOfLines; index++) {
+            //     // eslint-disable-next-line no-await-in-loop
+            //     const { data: ai_image_db_data, error } = await supabase
+            //         .from('ai_image')
+            //         .select('*')
+            //         .eq('song_id', songID)
+            //         .eq('lyric_index', index);
+            //     song_images = [...song_images, ai_image_db_data[0].image];
+            //     console.log(`${i}:${index}/${noOfLines}`);
+            // }
+
             const promise_array = [];
             for (let index = 0; index < noOfLines; index++) {
                 promise_array.push(
@@ -257,6 +269,7 @@ export default function Player({ session }) {
 
             // eslint-disable-next-line no-await-in-loop
             const ai_image_db_data = await Promise.allSettled(promise_array);
+
             let song_images = [];
             song_images = Array(noOfLines).fill('');
             ai_image_db_data.forEach((db_data) => {
@@ -264,11 +277,21 @@ export default function Player({ session }) {
                     db_data.value.data[0].image;
             });
 
-            setUris([...uris, `spotify:track:${songID}`]);
-            setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
-            setImages({ ...images, [songID]: song_images });
-            setLoading(false);
+            // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
+            setUris((uri) => {
+                return [...uri, `spotify:track:${songID}`];
+            });
+            setLyrics((lyric) => {
+                return { ...lyric, [songID]: songLyrics };
+            });
+            setImages((image) => {
+                return { ...image, [songID]: song_images };
+            });
         }
+        if (selectedSongs.length > 0) {
+            setPlay(true);
+        }
+        setLoading(false);
     };
 
     const getSongDetailsByID = async (id) => {
@@ -531,10 +554,13 @@ export default function Player({ session }) {
                         sx={{ mt: 5, mb: 20 }}
                         onClick={() => {
                             addSongUriAndLyrics();
-                            if (uris.length > 0) {
-                                setPlay(true);
-                            }
                         }}
+                        disabled={
+                            loading ||
+                            playlist.filter((play) => {
+                                return play.isSelected;
+                            }).length === 0
+                        }
                     >
                         Play Songs
                     </Button>
