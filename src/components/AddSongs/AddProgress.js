@@ -149,6 +149,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             );
             return '';
         }
+        console.log(data);
         return data.data[0].b64_json;
     };
 

@@ -9,6 +9,7 @@ import {
     Button,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
 import RadioPlaylist from './RadioPlaylist';
@@ -35,6 +36,7 @@ export default function Player({ session }) {
     const [liveImages, setLiveImages] = useState(white_image_base64);
     const [loading, setLoading] = useState(false);
     const [playlist, setPlaylist] = useState([]);
+    const [loadPercent, setLoadPercent] = useState(0);
 
     const scopes = [
         'streaming',
@@ -226,6 +228,7 @@ export default function Player({ session }) {
         setImages({});
         setLiveImages(white_image_base64);
         refreshPlaylist();
+        setLoadPercent(0);
     };
 
     const addSongUriAndLyrics = async () => {
@@ -263,6 +266,11 @@ export default function Player({ session }) {
                         .select('*')
                         .eq('song_id', songID)
                         .eq('lyric_index', index),
+                );
+                setLoadPercent(
+                    ((index + 1) / noOfLines) *
+                        ((i + 1) / selectedSongs.length) *
+                        100,
                 );
             }
 
@@ -548,22 +556,30 @@ export default function Player({ session }) {
                         playlist={playlist}
                         setPlaylist={setPlaylist}
                     />
-                    <Button
-                        variant="contained"
-                        size="small"
-                        sx={{ mt: 5, mb: 20 }}
-                        onClick={() => {
-                            addSongUriAndLyrics();
-                        }}
-                        disabled={
-                            loading ||
-                            playlist.filter((song) => {
-                                return song.isSelected;
-                            }).length === 0
-                        }
-                    >
-                        Play Songs
-                    </Button>
+                    {!loading ? (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            sx={{ mt: 5, mb: 20 }}
+                            onClick={() => {
+                                addSongUriAndLyrics();
+                            }}
+                            disabled={
+                                loading ||
+                                playlist.filter((song) => {
+                                    return song.isSelected;
+                                }).length === 0
+                            }
+                        >
+                            Play Songs
+                        </Button>
+                    ) : (
+                        <CircularProgress
+                            variant="determinate"
+                            value={loadPercent}
+                            sx={{ mt: 5 }}
+                        />
+                    )}
                 </div>
             ) : null}
         </>
