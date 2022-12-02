@@ -14,7 +14,7 @@ import {
 
 function Navbar({ supabase, session = null }) {
     const pages = ['About', 'Player', 'Add Songs'];
-    const settings = ['Profile', 'Logout'];
+    const settings = ['Logout'];
     const navLinks = {
         About: '/',
         Player: '/player',
@@ -109,7 +109,11 @@ function Navbar({ supabase, session = null }) {
                             <Avatar
                                 alt={session.user.user_metadata.full_name}
                                 src="/static/images/user.jpg"
-                                sx={{ mr: '10px' }}
+                                sx={{
+                                    mr: '10px',
+                                    backgroundColor: 'white',
+                                    color: '#1db954',
+                                }}
                             />
                         ) : (
                             <>Login</>
@@ -119,6 +123,8 @@ function Navbar({ supabase, session = null }) {
                         sx={{ mt: '45px' }}
                         PaperProps={{
                             style: {
+                                backgroundColor: 'black',
+                                border: '0.1px solid gray',
                                 width: 200,
                             },
                         }}
