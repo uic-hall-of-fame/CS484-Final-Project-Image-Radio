@@ -74,23 +74,34 @@ export default function Player({ session }) {
             document.location.href = '/';
         }
 
-        async function getPlaylist() {
-            const fetchedSongsFromDB = (
-                await supabase.from('songs').select('song_id')
-            ).data;
-
-            const fetchedPlaylist = await Promise.all(
-                fetchedSongsFromDB.map(async (song) => {
-                    const songDetails = await getSongDetailsByID(song.song_id);
-                    return { ...songDetails, isSelected: false };
-                }),
-            );
-
-            setPlaylist(fetchedPlaylist);
-        }
-
         getPlaylist();
     }, []);
+
+    const getPlaylist = async () => {
+        const fetchedSongsFromDB = (
+            await supabase.from('songs').select('song_id')
+        ).data;
+
+        const fetchedPlaylist = await Promise.all(
+            fetchedSongsFromDB.map(async (song) => {
+                const songDetails = await getSongDetailsByID(song.song_id);
+                return { ...songDetails, isSelected: false };
+            }),
+        );
+
+        setPlaylist(fetchedPlaylist);
+    };
+
+    const refreshPlaylist = () => {
+        const refreshedPlaylist = [...playlist].map((song) => {
+            return {
+                ...song,
+                isSelected: false,
+            };
+        });
+
+        setPlaylist(refreshedPlaylist);
+    };
 
     const getPlayerUpdates = (playerState) => {
         if (timeOutID) {
@@ -215,6 +226,7 @@ export default function Player({ session }) {
         setFirstPlayHappened(false);
         setImages({});
         setLiveImages(white_image_base64);
+        refreshPlaylist();
     };
 
     const addSongUriAndLyrics = async () => {
