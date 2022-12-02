@@ -133,7 +133,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             body: JSON.stringify({
                 prompt: imagePrompt, // A text description of the desired image(s). The maximum length is 1000 characters.
                 n: 1, // The number of images to generate. Must be between 1 and 10.
-                size: '512x512', // Must be one of 256x256, 512x512, or 1024x1024 (default)
+                size: '256x256', // Must be one of 256x256, 512x512, or 1024x1024 (default)
                 response_format: 'b64_json',
             }),
         });
