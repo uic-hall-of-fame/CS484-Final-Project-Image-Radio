@@ -15,6 +15,23 @@ const theme = createTheme({
             main: '#1db954',
             contrastText: 'white',
         },
+        background: {
+            default: 'black',
+        },
+    },
+    typography: {
+        allVariants: {
+            color: 'white',
+        },
+    },
+    components: {
+        MuiInputBase: {
+            styleOverrides: {
+                input: {
+                    color: 'white',
+                },
+            },
+        },
     },
 });
 
