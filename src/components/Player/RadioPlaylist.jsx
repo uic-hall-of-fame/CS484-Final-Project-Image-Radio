@@ -1,13 +1,16 @@
 import React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
+import {
+    Avatar,
+    Typography,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemAvatar,
+} from '@mui/material';
 
 export default function RadioPlaylist({ playlist, setPlaylist }) {
     return (
-        <List sx={{ minWidth: '50%', bgcolor: 'background.paper' }}>
+        <List sx={{ minWidth: '50%' }}>
             {playlist
                 ? playlist.map((song, index) => (
                       <ListItem
@@ -36,8 +39,19 @@ export default function RadioPlaylist({ playlist, setPlaylist }) {
                               />
                           </ListItemAvatar>
                           <ListItemText
-                              primary={song.song_name}
-                              secondary={song.song_artist}
+                              primary={
+                                  <Typography>{song.song_name}</Typography>
+                              }
+                              secondary={
+                                  <Typography
+                                      style={{
+                                          color: 'gray',
+                                          fontSize: '14px',
+                                      }}
+                                  >
+                                      {song.artist_name}
+                                  </Typography>
+                              }
                               sx={{ ml: 2 }}
                           />
                       </ListItem>
