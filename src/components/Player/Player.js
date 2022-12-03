@@ -312,8 +312,13 @@ export default function Player({ session }) {
             },
         });
 
+        // Manually logging out user when session token expires
         if (response.status === 401) {
             setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
         }
 
         const data = await response.json();
@@ -358,14 +363,19 @@ export default function Player({ session }) {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.provider_token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
         });
 
+        // Manually logging out user when session token expires
         if (response.status === 401) {
             setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
         }
 
         const data = await response.json();
