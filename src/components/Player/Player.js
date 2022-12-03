@@ -482,6 +482,7 @@ export default function Player({ session }) {
                         sx={{
                             width: '25ch',
                             border: '0.1px solid white',
+                            borderRadius: 2,
                             '& .MuiOutlinedInput-root.Mui-focused': {
                                 '& > fieldset': {
                                     border: 'none',

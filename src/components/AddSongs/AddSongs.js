@@ -31,7 +31,7 @@ function AddSongs({ session, isAdmin }) {
                 }}
             >
                 <Typography
-                    variant="h2"
+                    variant="h5"
                     gutterBottom
                     color="red"
                 >
@@ -74,7 +74,7 @@ function AddSongs({ session, isAdmin }) {
             {!addingSong ? (
                 <>
                     <Typography
-                        variant="h2"
+                        variant="h4"
                         gutterBottom
                     >
                         Add Songs to the Radio
@@ -85,13 +85,26 @@ function AddSongs({ session, isAdmin }) {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            columnGap: 20,
-                            marginBottom: 20,
+                            columnGap: 40,
+                            marginTop: 20,
+                            marginBottom: 30,
                         }}
                     >
                         <TextField
                             label="Song Name"
                             variant="outlined"
+                            sx={{
+                                border: '0.1px solid white',
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-root.Mui-focused': {
+                                    '& > fieldset': {
+                                        border: 'none',
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                style: { backgroundColor: '#191414' },
+                            }}
                             value={songName}
                             onChange={onSongNameChange}
                         />
@@ -99,17 +112,30 @@ function AddSongs({ session, isAdmin }) {
                         <TextField
                             label="Song Artist"
                             variant="outlined"
+                            sx={{
+                                border: '0.1px solid white',
+                                borderRadius: 2,
+                                '& .MuiOutlinedInput-root.Mui-focused': {
+                                    '& > fieldset': {
+                                        border: 'none',
+                                    },
+                                },
+                            }}
+                            InputLabelProps={{
+                                style: { backgroundColor: '#191414' },
+                            }}
                             value={songArtist}
                             onChange={onSongArtistChange}
                         />
                     </div>
-                    <Button
-                        variant="contained"
-                        disabled={!(songName && songArtist)}
-                        onClick={onAddSongsButtonClick}
-                    >
-                        Add Song
-                    </Button>
+                    {songName && songArtist ? (
+                        <Button
+                            variant="contained"
+                            onClick={onAddSongsButtonClick}
+                        >
+                            Add Song
+                        </Button>
+                    ) : null}
                 </>
             ) : (
                 <AddProgress
