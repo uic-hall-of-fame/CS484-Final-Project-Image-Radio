@@ -333,13 +333,14 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                     <div style={{ textAlign: 'center' }}>Status: {status}</div>
                 </Box>
             )}
-            <Button
-                variant="contained"
-                onClick={onBackButtonClick}
-                disabled={isImageGenerating}
-            >
-                Go Back
-            </Button>
+            {!isImageGenerating && (
+                <Button
+                    variant="contained"
+                    onClick={onBackButtonClick}
+                >
+                    Go Back
+                </Button>
+            )}
         </>
     );
 }
