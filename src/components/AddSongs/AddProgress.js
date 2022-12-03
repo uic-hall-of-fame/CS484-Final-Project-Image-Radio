@@ -143,6 +143,16 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             setIsImageGenerating(false);
             console.log('API KEY EXHAUSTED');
         } else if (
+            data?.error?.message?.startsWith(
+                'Rate limit reached for images per minute.',
+            )
+        ) {
+            setStatus(
+                'openAI API rate limit reached for images per minute. Try again after sometime',
+            );
+            setIsImageGenerating(false);
+            console.log('Rate limit reached');
+        } else if (
             data?.error?.message ===
                 'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.' ||
             data?.error?.message ===
