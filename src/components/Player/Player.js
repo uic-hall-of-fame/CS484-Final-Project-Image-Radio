@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
+    Box,
     FormControl,
     InputLabel,
     OutlinedInput,
@@ -613,11 +614,21 @@ export default function Player({ session }) {
                         </Button>
                     ) : null}
                     {loading ? (
-                        <CircularProgress
-                            variant="determinate"
-                            value={loadPercent}
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
                             sx={{ mt: 5, mb: 10 }}
-                        />
+                        >
+                            <CircularProgress
+                                variant="determinate"
+                                size={60}
+                                value={loadPercent}
+                            />
+                            <Typography position="absolute">
+                                {Math.floor(loadPercent)}%
+                            </Typography>
+                        </Box>
                     ) : null}
                 </div>
             ) : null}
