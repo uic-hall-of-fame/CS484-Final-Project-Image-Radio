@@ -22,7 +22,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         setStatus('Fetching song lyrics');
         const { song_id } = songDetails;
         const lyricsData = await getSongLyricsByID(song_id);
-        console.log(lyricsData);
         if (lyricsData.error === true) {
             setStatus(`Error in fetching song lyrics (${lyricsData.message})`);
         } else if (lyricsData.syncType !== 'LINE_SYNCED') {
@@ -30,7 +29,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         } else {
             setStatus('Fetching synced song lyrics');
             const { lines } = lyricsData;
-            console.log(lines);
 
             // Checking if any data for this song already exists in the database
             const promise_array = [];
@@ -45,7 +43,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             }
             let error = false;
             const song_db_data = await Promise.all(promise_array);
-            console.log(song_db_data);
             const existingImagesIndex = [];
             for (let index = 0; index < song_db_data.length; index++) {
                 if (song_db_data[index].error) {
@@ -58,7 +55,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                     );
                 }
             }
-            console.log(existingImagesIndex);
 
             if (error) {
                 setStatus('Error in fetching data from the database');
@@ -74,7 +70,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                             // eslint-disable-next-line no-await-in-loop
                             image = await fetchImage(imagePrompt);
                         }
-                        // eslint-disable-next-line no-await-in-loop
+                        // eslint-disable-next-line no-await-in-loop, no-unused-vars
                         const { data, error } = await supabase
                             .from('ai_image')
                             .insert([
@@ -86,7 +82,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                             ]);
                         if (error) {
                             db_error = true;
-                            console.log(`error at index:${index}`);
                         }
                         setProgress(Math.floor((index / lines.length) * 100)); // Not doing index+1 because we don't want the progress to reach 100% yet
                     }
@@ -97,6 +92,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                         'There was some error in uploading AI images for some lyrics lines',
                     );
                 } else {
+                    // eslint-disable-next-line no-unused-vars
                     const { data, error } = await supabase
                         .from('songs')
                         .insert([
@@ -141,7 +137,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         if (data?.error?.message === 'Billing hard limit has been reached') {
             setStatus('openAI API key exhausted');
             setIsImageGenerating(false);
-            console.log('API KEY EXHAUSTED');
         } else if (
             data?.error?.message?.startsWith(
                 'Rate limit reached for images per minute.',
@@ -151,7 +146,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                 'openAI API rate limit reached for images per minute. Try again after sometime',
             );
             setIsImageGenerating(false);
-            console.log('Rate limit reached');
         } else if (
             data?.error?.message ===
                 'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.' ||
@@ -163,7 +157,6 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             );
             return '';
         }
-        console.log(data);
         return data.data[0].b64_json;
     };
 
@@ -267,6 +260,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             setDataLoading(false);
         }
         getSongDetails(songName, songArtist);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (dataLoading) {
