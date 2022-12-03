@@ -16,6 +16,17 @@ https://image-radio.netlify.app/<br/>
 Username: imageradio484@gmail.com<br/>
 Password: imageradio484$*$
 
+## Features
+
+-   OAuth with Spotify
+-   Spotify Web Player (with audio casting between connected devices)
+-   Request to add a song to the playlist (for admin users only)
+-   Resume progress to add a song to the playlist in case of an interruption
+-   Song playlist fetched from the database
+-   AI generated images using song lyrics (also stored in the database)
+-   Synchronized lyrics with song audio
+-   Synchronized AI generated images with song audio
+
 ## What does your application do?
 
 Our application aims to emulate a radio station, which uses the lyrics of a song of the user's choice, to generate a series of images, and synchronizes the music audio with its respective images.
