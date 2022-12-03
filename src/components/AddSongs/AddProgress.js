@@ -138,7 +138,11 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             }),
         });
         const data = await response.json();
-        if (
+        if (data?.error?.message === 'Billing hard limit has been reached') {
+            setStatus('openAI API key exhausted');
+            setIsImageGenerating(false);
+            console.log('API KEY EXHAUSTED');
+        } else if (
             data?.error?.message ===
                 'Your request was rejected as a result of our safety system. Your prompt may contain text that is not allowed by our safety system.' ||
             data?.error?.message ===
