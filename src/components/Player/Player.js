@@ -580,7 +580,12 @@ export default function Player({ session }) {
                         playlist={playlist}
                         setPlaylist={setPlaylist}
                     />
-                    {!loading ? (
+                    {!(
+                        loading ||
+                        playlist.filter((song) => {
+                            return song.isSelected;
+                        }).length === 0
+                    ) ? (
                         <Button
                             variant="contained"
                             size="small"
@@ -597,13 +602,14 @@ export default function Player({ session }) {
                         >
                             Play Songs
                         </Button>
-                    ) : (
+                    ) : null}
+                    {loading ? (
                         <CircularProgress
                             variant="determinate"
                             value={loadPercent}
                             sx={{ mt: 5 }}
                         />
-                    )}
+                    ) : null}
                 </div>
             ) : null}
         </>
