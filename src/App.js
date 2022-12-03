@@ -8,6 +8,7 @@ import About from './components/About/About';
 import Player from './components/Player/Player';
 import supabase from './supabaseClient';
 import AddSongs from './components/AddSongs/AddSongs';
+import CopyDB from './components/CopyDB/CopyDB';
 
 const theme = createTheme({
     palette: {
@@ -129,6 +130,11 @@ function App() {
                             isAdmin={isAdmin}
                         />
                     }
+                />
+                <Route
+                    exact
+                    path="/copy_db"
+                    element={<CopyDB />}
                 />
             </Routes>
         </ThemeProvider>
