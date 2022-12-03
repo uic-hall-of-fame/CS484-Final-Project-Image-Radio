@@ -21,8 +21,8 @@ let manualButtonClick = false;
 
 export default function Player({ session }) {
     // https://png-pixel.com/ : For getting 512X512/256X256 blank image
-    const white_image_base64 =
-        'iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAQAAAAqtv5HAAAC5klEQVR42u3TAQ0AAAgDIN8/9E1gADfoQNoBDhEEBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAUEEAUFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQUAQQUAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBAQRBAQBAQBQUAQEAQEAUFAEBAEEAQEAUFAEBAEBAFBQBAQBAQBBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBAQBQUAQEAQQBAQBQUAQEAQEAUFAEBAEBBEEBAFBQBAQBAQBQUAQEAQEAQQBQUAQEAQEAUFAEBAEBAFBAEFAEBAEBAFBQBAQBAQBQQBBQBAQBAQBQUAQEAQEAUFAEEAQEAQEAUFAEBAEBAFBQBBAEBAEBAFBQBAQBASB/xY6FR6eFAUeggAAAABJRU5ErkJggg==';
+    const black_image_base64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAEiElEQVR42u3VMQEAAAQAQTpY9A9KBrO7CL98dtUEABylgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCByACAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAZiIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgRgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgBgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAZiIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgMgBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEA8NUCGMT1oLrIY8cAAAAASUVORK5CYII=';
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
@@ -33,7 +33,7 @@ export default function Player({ session }) {
     const [tokenError, setTokenError] = useState(false);
     const [firstPlayHappened, setFirstPlayHappened] = useState(false);
     const [images, setImages] = useState({});
-    const [liveImages, setLiveImages] = useState(white_image_base64);
+    const [liveImages, setLiveImages] = useState(black_image_base64);
     const [loading, setLoading] = useState(false);
     const [playlist, setPlaylist] = useState([]);
 
@@ -225,7 +225,7 @@ export default function Player({ session }) {
         setTokenError(false);
         setFirstPlayHappened(false);
         setImages({});
-        setLiveImages(white_image_base64);
+        setLiveImages(black_image_base64);
         refreshPlaylist();
     };
 
@@ -474,7 +474,7 @@ export default function Player({ session }) {
                     >
                         <InputLabel
                             htmlFor="outlined-adornment-password"
-                            sx={{ backgroundColor: 'black' }}
+                            sx={{ backgroundColor: '#191414' }}
                         >
                             Spotify Access Token
                         </InputLabel>
@@ -562,22 +562,23 @@ export default function Player({ session }) {
                         playlist={playlist}
                         setPlaylist={setPlaylist}
                     />
-                    <Button
-                        variant="contained"
-                        size="small"
-                        sx={{ mt: 5, mb: 20 }}
-                        onClick={() => {
-                            addSongUriAndLyrics();
-                        }}
-                        disabled={
-                            loading ||
-                            playlist.filter((song) => {
-                                return song.isSelected;
-                            }).length === 0
-                        }
-                    >
-                        Play Songs
-                    </Button>
+                    {!(
+                        loading ||
+                        playlist.filter((song) => {
+                            return song.isSelected;
+                        }).length === 0
+                    ) ? (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            sx={{ mt: 5, mb: 20 }}
+                            onClick={() => {
+                                addSongUriAndLyrics();
+                            }}
+                        >
+                            Play Songs
+                        </Button>
+                    ) : null}
                 </div>
             ) : null}
         </>

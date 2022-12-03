@@ -123,7 +123,7 @@ function Navbar({ supabase, session = null }) {
                         sx={{ mt: '45px' }}
                         PaperProps={{
                             style: {
-                                backgroundColor: 'black',
+                                backgroundColor: '#191414',
                                 border: '0.1px solid gray',
                                 width: 200,
                             },
