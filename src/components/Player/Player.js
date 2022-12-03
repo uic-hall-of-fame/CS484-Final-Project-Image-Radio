@@ -590,7 +590,7 @@ export default function Player({ session }) {
                         <Button
                             variant="contained"
                             size="small"
-                            sx={{ mt: 5, mb: 20 }}
+                            sx={{ mt: 5, mb: 10 }}
                             onClick={() => {
                                 addSongUriAndLyrics();
                             }}
@@ -608,7 +608,7 @@ export default function Player({ session }) {
                         <CircularProgress
                             variant="determinate"
                             value={loadPercent}
-                            sx={{ mt: 5 }}
+                            sx={{ mt: 5, mb: 10 }}
                         />
                     ) : null}
                 </div>
