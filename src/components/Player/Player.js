@@ -247,43 +247,51 @@ export default function Player({ session }) {
 
             const noOfLines = songLyrics.lines.length;
 
-            // let song_images = [];
-            // for (let index = 0; index < noOfLines; index++) {
-            //     // eslint-disable-next-line no-await-in-loop
-            //     const { data: ai_image_db_data, error } = await supabase
-            //         .from('ai_image')
-            //         .select('*')
-            //         .eq('song_id', songID)
-            //         .eq('lyric_index', index);
-            //     song_images = [...song_images, ai_image_db_data[0].image];
-            //     console.log(`${i}:${index}/${noOfLines}`);
-            // }
-
-            const promise_array = [];
+            // 1.Without Promise.all() method
+            let song_images = [];
             for (let index = 0; index < noOfLines; index++) {
-                promise_array.push(
-                    supabase
-                        .from('ai_image')
-                        .select('*')
-                        .eq('song_id', songID)
-                        .eq('lyric_index', index),
-                );
+                // eslint-disable-next-line no-await-in-loop
+                const { data: ai_image_db_data, error } = await supabase
+                    .from('ai_image')
+                    .select('*')
+                    .eq('song_id', songID)
+                    .eq('lyric_index', index);
+                song_images = [...song_images, ai_image_db_data[0].image];
                 setLoadPercent(
-                    ((index + 1) / noOfLines) *
-                        ((i + 1) / selectedSongs.length) *
+                    (i / selectedSongs.length +
+                        ((index + 1) / noOfLines) *
+                            (1 / selectedSongs.length)) *
                         100,
                 );
+                // console.log(`${i}:${index}/${noOfLines}`);
             }
 
-            // eslint-disable-next-line no-await-in-loop
-            const ai_image_db_data = await Promise.allSettled(promise_array);
+            // 2.With Promise.all() method
+            // const promise_array = [];
+            // for (let index = 0; index < noOfLines; index++) {
+            //     promise_array.push(
+            //         supabase
+            //             .from('ai_image')
+            //             .select('*')
+            //             .eq('song_id', songID)
+            //             .eq('lyric_index', index),
+            //     );
+            //     setLoadPercent(
+            //         ((index + 1) / noOfLines) *
+            //             ((i + 1) / selectedSongs.length) *
+            //             100,
+            //     );
+            // }
 
-            let song_images = [];
-            song_images = Array(noOfLines).fill('');
-            ai_image_db_data.forEach((db_data) => {
-                song_images[db_data.value.data[0].lyric_index] =
-                    db_data.value.data[0].image;
-            });
+            // // eslint-disable-next-line no-await-in-loop
+            // const ai_image_db_data = await Promise.allSettled(promise_array);
+
+            // let song_images = [];
+            // song_images = Array(noOfLines).fill('');
+            // ai_image_db_data.forEach((db_data) => {
+            //     song_images[db_data.value.data[0].lyric_index] =
+            //         db_data.value.data[0].image;
+            // });
 
             setUris((uri) => {
                 return [...uri, `spotify:track:${songID}`];
