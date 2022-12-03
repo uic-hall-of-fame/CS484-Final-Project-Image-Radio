@@ -16,6 +16,17 @@ https://image-radio.netlify.app/<br/>
 Username: imageradio484@gmail.com<br/>
 Password: imageradio484$*$
 
+## Features
+
+-   OAuth with Spotify
+-   Spotify Web Player (with audio casting between connected devices)
+-   Request to add a song to the playlist (for admin users only)
+-   Resume progress to add a song to the playlist in case of an interruption
+-   Song playlist fetched from the database
+-   AI generated images using song lyrics (also stored in the database)
+-   Synchronized lyrics with song audio
+-   Synchronized AI generated images with song audio
+
 ## What does your application do?
 
 Our application aims to emulate a radio station, which uses the lyrics of a song of the user's choice, to generate a series of images, and synchronizes the music audio with its respective images.
@@ -34,4 +45,4 @@ We plan to play a song and its lyrics, in a synchronous manner. We will use <b>O
 
 ## Final Submission Description
 
-We plan to play a song and display AI generated images from its lyrics, in a synchronous manner. We will use <b>OAuth with Spotify</b> for user login. After this, we will fetch the timestamped lyrics of the song and play it using the <b>Spotify API</b>. <b>Supabase</b> database will be used for the backend, while <b>React</b> will be used for the frontend. We will use <b>GitHub</b> for version control along with <b>Netlify</b> for CI and hosting. Our project will also utilize an image generating AI API (probably the newly released <b>DALLE-2</b>), to generate images based on the lyrics of the song.
+We plan to play a song and display AI generated images from its lyrics, in a synchronous manner. We will use <b>OAuth with Spotify</b> for user login. After this, we will fetch the timestamped lyrics of the song and play it using the <b>Spotify API</b>. <b>Supabase</b> database will be used for the backend, while <b>React</b> will be used for the frontend. We will use <b>GitHub</b> for version control along with <b>Netlify</b> for CI and hosting. Our project also utilizes the newly released <b>DALLE-2 API</b>, to generate images based on the lyrics of the song. We successfully completed all the planned tasks for the final submission.

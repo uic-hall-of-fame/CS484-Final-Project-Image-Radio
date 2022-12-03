@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
+    Box,
     FormControl,
     InputLabel,
     OutlinedInput,
     InputAdornment,
     IconButton,
     Button,
-    TextField,
+    Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
+import RadioPlaylist from './RadioPlaylist';
+import supabase from '../../supabaseClient';
 
 let timeOutID = null; // timeOutID variable is placed outside the component because the component gets rerendered repeatedly which resets the timeOutID variable to null on every render when it is inside the below function
 // https://stackoverflow.com/questions/60765267/why-is-the-state-not-being-properly-updated-in-this-react-native-component
 let manualButtonClick = false;
 
 export default function Player({ session }) {
+    // https://png-pixel.com/ : For getting 512X512/256X256 blank image
+    const black_image_base64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAEiElEQVR42u3VMQEAAAQAQTpY9A9KBrO7CL98dtUEABylgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCByACAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAZiIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgRgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgBgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAYCAAYCgIEAYCAAGAgABgIABgKAgQBgIAAYCAAGAgAGAoCBAGAgABgIAAZiIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgMgBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEAgIEAYCAAGAgABgKAgQCAgQBgIAAYCAAGAoCBAICBAGAgABgIAAYCgIEYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAGAgAGAgABgKAgQBgIAAYCAAYCAAGAoCBAGAgABgIABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEAYCAAYCAAGAgABgKAgQBgIABgIAAYCAAGAoCBAGAgAGAgABgIAAYCgIEA8NUCGMT1oLrIY8cAAAAASUVORK5CYII=';
     const [token, setToken] = useState('');
     const [tokenText, setTokenText] = useState('');
     const [showToken, setShowToken] = useState(false);
     const [uris, setUris] = useState([]);
-    const [songText, setSongText] = useState('');
-    const [artistText, setArtistText] = useState('');
     const [lyrics, setLyrics] = useState({});
     const [play, setPlay] = useState(false);
     const [liveLyrics, setLiveLyrics] = useState('');
     const [tokenError, setTokenError] = useState(false);
     const [firstPlayHappened, setFirstPlayHappened] = useState(false);
-    // const [currentSongID, setCurrentSongID] = useState(null);
+    const [images, setImages] = useState({});
+    const [liveImages, setLiveImages] = useState(black_image_base64);
+    const [loading, setLoading] = useState(false);
+    const [playlist, setPlaylist] = useState([]);
+    const [loadPercent, setLoadPercent] = useState(0);
 
     const scopes = [
         'streaming',
@@ -62,12 +71,39 @@ export default function Player({ session }) {
         event.preventDefault();
     };
 
-    const handleSongChange = (event) => {
-        setSongText(event.target.value);
+    useEffect(() => {
+        // Send user to homepage upon browser page refresh
+        if (!session) {
+            document.location.href = '/';
+        }
+
+        getPlaylist();
+    }, []);
+
+    const getPlaylist = async () => {
+        const fetchedSongsFromDB = (
+            await supabase.from('songs').select('song_id')
+        ).data;
+
+        const fetchedPlaylist = await Promise.all(
+            fetchedSongsFromDB.map(async (song) => {
+                const songDetails = await getSongDetailsByID(song.song_id);
+                return { ...songDetails, isSelected: false };
+            }),
+        );
+
+        setPlaylist(fetchedPlaylist);
     };
 
-    const handleArtistChange = (event) => {
-        setArtistText(event.target.value);
+    const refreshPlaylist = () => {
+        const refreshedPlaylist = [...playlist].map((song) => {
+            return {
+                ...song,
+                isSelected: false,
+            };
+        });
+
+        setPlaylist(refreshedPlaylist);
     };
 
     const getPlayerUpdates = (playerState) => {
@@ -107,6 +143,7 @@ export default function Player({ session }) {
             // If the song is being played
             const startTime = playerState.progressMs;
             const songLyrics = lyrics[playerState.track.id].lines;
+            const songImages = images[playerState.track.id];
             const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
 
             // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
@@ -132,7 +169,7 @@ export default function Player({ session }) {
             }
 
             // Display the lyrics on the screen
-            displayLyrics(startIndex, songLyrics, offset);
+            displayLyrics(startIndex, songLyrics, songImages, offset);
         }
     };
 
@@ -146,20 +183,24 @@ export default function Player({ session }) {
         return songLyrics.length - 1;
     };
 
-    const displayLyrics = (startIndex, songLyrics, offset = 0) => {
+    const displayLyrics = (startIndex, songLyrics, songImages, offset = 0) => {
         // This function will display the lyrics on the screen
         if (startIndex === -1) {
             // When the lyrics have not started in the song
             setLiveLyrics('');
+            setLiveImages(songImages[0]);
 
             // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
             const timeOut = songLyrics[startIndex + 1].startTimeMs - offset;
             timeOutID = setTimeout(() => {
-                displayLyrics(startIndex + 1, songLyrics);
+                displayLyrics(startIndex + 1, songLyrics, songImages);
             }, timeOut);
         } else {
             // When the lyrics have started in the song
             setLiveLyrics(songLyrics[startIndex].words);
+            if (songImages[startIndex] !== '') {
+                setLiveImages(songImages[startIndex]);
+            }
 
             if (startIndex <= songLyrics.length - 2) {
                 // Calculating the timeOut in ms after which the next line of lyrics is to be displayed
@@ -169,7 +210,7 @@ export default function Player({ session }) {
                     offset;
 
                 timeOutID = setTimeout(() => {
-                    displayLyrics(startIndex + 1, songLyrics);
+                    displayLyrics(startIndex + 1, songLyrics, songImages);
                 }, timeOut);
             }
         }
@@ -180,25 +221,138 @@ export default function Player({ session }) {
         setTokenText('');
         setShowToken(false);
         setUris([]);
-        setSongText('');
-        setArtistText('');
         setLyrics([]);
         setPlay(false);
         clearTimeout(timeOutID);
         setLiveLyrics('');
         setTokenError(false);
         setFirstPlayHappened(false);
-        // setCurrentSongID(null);
+        setImages({});
+        setLiveImages(black_image_base64);
+        refreshPlaylist();
+        setLoadPercent(0);
     };
 
-    const addSongUriAndLyrics = async (songName, songArtist) => {
-        const [songID, songLyrics] = await getIdAndLyricsByNameAndArtist(
-            songName,
-            songArtist,
+    const addSongUriAndLyrics = async () => {
+        setLoading(true);
+
+        const selectedSongs = playlist.filter(
+            (song) => song.isSelected === true,
         );
 
-        setUris([...uris, `spotify:track:${songID}`]);
-        setLyrics({ ...lyrics, [songID]: songLyrics }); // https://stackoverflow.com/questions/11508463/javascript-set-object-key-by-variable
+        for (let i = 0; i < selectedSongs.length; i++) {
+            const songID = selectedSongs[i].song_id;
+
+            // eslint-disable-next-line no-await-in-loop
+            const songLyrics = await getSongLyricsByID(songID);
+
+            const noOfLines = songLyrics.lines.length;
+
+            // 1.Without Promise.all() method
+            let song_images = [];
+            for (let index = 0; index < noOfLines; index++) {
+                // eslint-disable-next-line no-await-in-loop
+                const { data: ai_image_db_data, error } = await supabase
+                    .from('ai_image')
+                    .select('*')
+                    .eq('song_id', songID)
+                    .eq('lyric_index', index);
+                song_images = [...song_images, ai_image_db_data[0].image];
+                setLoadPercent(
+                    (i / selectedSongs.length +
+                        ((index + 1) / noOfLines) *
+                            (1 / selectedSongs.length)) *
+                        100,
+                );
+                // console.log(`${i}:${index}/${noOfLines}`);
+            }
+
+            // 2.With Promise.all() method
+            // const promise_array = [];
+            // for (let index = 0; index < noOfLines; index++) {
+            //     promise_array.push(
+            //         supabase
+            //             .from('ai_image')
+            //             .select('*')
+            //             .eq('song_id', songID)
+            //             .eq('lyric_index', index),
+            //     );
+            //     setLoadPercent(
+            //         ((index + 1) / noOfLines) *
+            //             ((i + 1) / selectedSongs.length) *
+            //             100,
+            //     );
+            // }
+
+            // // eslint-disable-next-line no-await-in-loop
+            // const ai_image_db_data = await Promise.allSettled(promise_array);
+
+            // let song_images = [];
+            // song_images = Array(noOfLines).fill('');
+            // ai_image_db_data.forEach((db_data) => {
+            //     song_images[db_data.value.data[0].lyric_index] =
+            //         db_data.value.data[0].image;
+            // });
+
+            setUris((uri) => {
+                return [...uri, `spotify:track:${songID}`];
+            });
+            setLyrics((lyric) => {
+                return { ...lyric, [songID]: songLyrics };
+            });
+            setImages((image) => {
+                return { ...image, [songID]: song_images };
+            });
+        }
+        if (selectedSongs.length > 0) {
+            setPlay(true);
+        }
+        setLoading(false);
+    };
+
+    const getSongDetailsByID = async (id) => {
+        const url = `https://api.spotify.com/v1/tracks/${id}`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${session.provider_token}`,
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+
+        // Manually logging out user when session token expires
+        if (response.status === 401) {
+            setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
+        }
+
+        const data = await response.json();
+
+        let artistString = data.artists[0].name; // First artist of the song
+
+        // Intermediate artists of the song separated by commas
+        for (let i = 1; i < data.artists.length - 1; i++) {
+            artistString = `${artistString}, ${data.artists[i].name}`;
+        }
+
+        // Last artist of the song displayed after & (When multiple song artists present)
+        if (data.artists.length > 1) {
+            artistString = `${artistString} & ${
+                data.artists[data.artists.length - 1].name
+            }`;
+        }
+
+        return {
+            song_id: data.id,
+            song_name: data.name,
+            artist_name: artistString,
+            album_image: data.album.images[0].url,
+        };
     };
 
     const getSongDetailsByNameAndArtist = async (songName, songArtist) => {
@@ -219,14 +373,19 @@ export default function Player({ session }) {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.provider_token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
         });
 
+        // Manually logging out user when session token expires
         if (response.status === 401) {
             setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
         }
 
         const data = await response.json();
@@ -291,8 +450,25 @@ export default function Player({ session }) {
     return (
         <>
             {token !== '' && play && uris.length > 0 ? (
-                <div style={{ marginTop: 50, marginBottom: 30 }}>
+                <div style={{ marginTop: 10, marginBottom: 30 }}>
                     <ErrorBoundary FallbackComponent={PlayerErrorHandler}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 10,
+                            }}
+                        >
+                            {/* Reference: https://stackoverflow.com/questions/8499633/how-to-display-base64-images-in-html */}
+                            <img
+                                src={`data:image/jpeg;base64,${liveImages}`}
+                                id="base64image"
+                                height="400px"
+                                width="400px"
+                                alt="Failed to load"
+                            />
+                        </div>
                         <MusicPlayer
                             token={token}
                             callback={getPlayerUpdates}
@@ -314,10 +490,20 @@ export default function Player({ session }) {
                     <FormControl
                         sx={{
                             width: '25ch',
+                            border: '0.1px solid white',
+                            borderRadius: 2,
+                            '& .MuiOutlinedInput-root.Mui-focused': {
+                                '& > fieldset': {
+                                    border: 'none',
+                                },
+                            },
                         }}
                         variant="outlined"
                     >
-                        <InputLabel htmlFor="outlined-adornment-password">
+                        <InputLabel
+                            htmlFor="outlined-adornment-password"
+                            sx={{ backgroundColor: '#191414' }}
+                        >
                             Spotify Access Token
                         </InputLabel>
                         <OutlinedInput
@@ -333,6 +519,7 @@ export default function Player({ session }) {
                                         onMouseDown={handleMouseUpDownToken}
                                         onMouseUp={handleMouseUpDownToken}
                                         edge="end"
+                                        sx={{ color: 'white' }}
                                     >
                                         {showToken ? (
                                             <VisibilityOff />
@@ -365,52 +552,6 @@ export default function Player({ session }) {
                 </div>
             ) : null}
             {tokenError ? <PlayerErrorHandler /> : null}
-            {token !== '' && !play && !tokenError ? (
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: 30,
-                        columnGap: 20,
-                    }}
-                >
-                    <TextField
-                        label="Song Name"
-                        variant="outlined"
-                        value={songText}
-                        onChange={handleSongChange}
-                    />
-                    <TextField
-                        label="Artist Name"
-                        variant="outlined"
-                        value={artistText}
-                        onChange={handleArtistChange}
-                    />
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => {
-                            setSongText('');
-                            setArtistText('');
-                            addSongUriAndLyrics(songText, artistText);
-                        }}
-                    >
-                        Add Song to Queue
-                    </Button>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => {
-                            if (uris.length > 0) {
-                                setPlay(true);
-                            }
-                        }}
-                    >
-                        Play Songs
-                    </Button>
-                </div>
-            ) : null}
             <div style={{ textAlign: 'center', marginTop: 10, height: 30 }}>
                 <h3> {play && !tokenError ? liveLyrics : null}</h3>
             </div>
@@ -431,6 +572,64 @@ export default function Player({ session }) {
                     >
                         Reset Player
                     </Button>
+                </div>
+            ) : null}
+            {token !== '' && !play && !tokenError ? (
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Typography variant="overline">
+                        <b>Listen to songs from our radio playlist</b>
+                    </Typography>
+                    <RadioPlaylist
+                        playlist={playlist}
+                        setPlaylist={setPlaylist}
+                    />
+                    {!(
+                        loading ||
+                        playlist.filter((song) => {
+                            return song.isSelected;
+                        }).length === 0
+                    ) ? (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            sx={{ mt: 5, mb: 10 }}
+                            onClick={() => {
+                                addSongUriAndLyrics();
+                            }}
+                            disabled={
+                                loading ||
+                                playlist.filter((song) => {
+                                    return song.isSelected;
+                                }).length === 0
+                            }
+                        >
+                            Play Songs
+                        </Button>
+                    ) : null}
+                    {loading ? (
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            sx={{ mt: 5, mb: 10 }}
+                        >
+                            <CircularProgress
+                                variant="determinate"
+                                size={60}
+                                value={loadPercent}
+                            />
+                            <Typography position="absolute">
+                                {Math.floor(loadPercent)}%
+                            </Typography>
+                        </Box>
+                    ) : null}
                 </div>
             ) : null}
         </>
