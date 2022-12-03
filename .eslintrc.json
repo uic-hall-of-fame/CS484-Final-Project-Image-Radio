@@ -24,6 +24,6 @@
         "camelcase": ["off"],
         "no-plusplus": ["off"],
         "no-use-before-define": ["off"],
-        "no-shadow": ["warn"]
+        "no-shadow": ["off"]
     }
 }

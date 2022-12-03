@@ -78,6 +78,7 @@ export default function Player({ session }) {
         }
 
         getPlaylist();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getPlaylist = async () => {
@@ -251,7 +252,7 @@ export default function Player({ session }) {
             // 1.Without Promise.all() method
             let song_images = [];
             for (let index = 0; index < noOfLines; index++) {
-                // eslint-disable-next-line no-await-in-loop
+                // eslint-disable-next-line no-await-in-loop, no-unused-vars
                 const { data: ai_image_db_data, error } = await supabase
                     .from('ai_image')
                     .select('*')
@@ -432,6 +433,7 @@ export default function Player({ session }) {
         return lyricsData;
     };
 
+    // eslint-disable-next-line no-unused-vars
     const getIdAndLyricsByNameAndArtist = async (songName, songArtist) => {
         const { song_id } = await getSongDetailsByNameAndArtist(
             songName,
