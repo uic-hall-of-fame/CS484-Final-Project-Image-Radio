@@ -5,20 +5,26 @@ export default function About() {
     return (
         <>
             <Typography
-                variant="h4"
+                variant="overline"
                 component="div"
                 gutterBottom
                 align="center"
-                sx={{ mt: 4 }}
+                sx={{ mt: 4, fontSize: '30px' }}
             >
                 Final project Tech stack and MVP proposal
             </Typography>
 
             <Typography
-                variant="h5"
+                variant="overline"
                 component="div"
                 gutterBottom
-                sx={{ mt: 4, ml: 4, textDecoration: 'underline' }}
+                sx={{
+                    mt: -2,
+                    ml: 4,
+                    textDecoration: 'underline',
+                    textAlign: 'center',
+                    fontSize: '20px',
+                }}
             >
                 Architecture Diagram
             </Typography>
@@ -35,10 +41,17 @@ export default function About() {
             </Box>
 
             <Typography
-                variant="h5"
+                variant="overline"
                 component="div"
                 gutterBottom
-                sx={{ mt: 4, ml: 4, textDecoration: 'underline' }}
+                sx={{
+                    mt: 4,
+                    ml: 4,
+                    mb: -1,
+                    textDecoration: 'underline',
+                    textAlign: 'center',
+                    fontSize: '20px',
+                }}
             >
                 MVP (Minimum Viable Product) Description
             </Typography>
@@ -59,10 +72,17 @@ export default function About() {
             </Typography>
 
             <Typography
-                variant="h5"
+                variant="overline"
                 component="div"
                 gutterBottom
-                sx={{ mt: 4, ml: 4, textDecoration: 'underline' }}
+                sx={{
+                    mt: 4,
+                    ml: 4,
+                    mb: -1,
+                    textDecoration: 'underline',
+                    textAlign: 'center',
+                    fontSize: '20px',
+                }}
             >
                 Final Submission Description
             </Typography>
@@ -70,7 +90,7 @@ export default function About() {
             <Typography
                 variant="h6"
                 gutterBottom
-                sx={{ ml: 4 }}
+                sx={{ ml: 4, mb: 4 }}
             >
                 We plan to play a song and display AI generated images from its
                 lyrics, in a synchronous manner. We will use{' '}

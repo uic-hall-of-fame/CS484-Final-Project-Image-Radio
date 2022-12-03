@@ -13,11 +13,12 @@ import {
 } from '@mui/material';
 
 function Navbar({ supabase, session = null }) {
-    const pages = ['About', 'Player'];
-    const settings = ['Profile', 'Logout'];
+    const pages = ['About', 'Player', 'Add Songs'];
+    const settings = ['Logout'];
     const navLinks = {
         About: '/',
         Player: '/player',
+        'Add Songs': '/add_songs',
     };
 
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -62,7 +63,7 @@ function Navbar({ supabase, session = null }) {
                         mr: 2,
                         ml: 1,
                         display: { xs: 'none', md: 'flex' },
-                        color: 'inherit',
+                        color: 'white',
                         textDecoration: 'none',
                     }}
                 >
@@ -108,7 +109,11 @@ function Navbar({ supabase, session = null }) {
                             <Avatar
                                 alt={session.user.user_metadata.full_name}
                                 src="/static/images/user.jpg"
-                                sx={{ mr: '10px' }}
+                                sx={{
+                                    mr: '10px',
+                                    backgroundColor: 'white',
+                                    color: '#1db954',
+                                }}
                             />
                         ) : (
                             <>Login</>
@@ -116,6 +121,13 @@ function Navbar({ supabase, session = null }) {
                     </IconButton>
                     <Menu
                         sx={{ mt: '45px' }}
+                        PaperProps={{
+                            style: {
+                                backgroundColor: '#191414',
+                                border: '0.1px solid gray',
+                                width: 200,
+                            },
+                        }}
                         id="menu-appbar"
                         anchorEl={anchorElUser}
                         anchorOrigin={{
@@ -131,20 +143,11 @@ function Navbar({ supabase, session = null }) {
                         onClose={handleCloseUserMenu}
                     >
                         {session && (
-                            <div
-                                style={{
-                                    cursor: 'default',
-                                    backgroundColor: 'transparent',
-                                }}
-                                className="css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root" // MenuItem CSS class
-                            >
-                                <Typography
-                                    textAlign="center"
-                                    sx={{ fontWeight: 'bold' }}
-                                >
+                            <MenuItem style={{ pointerEvents: 'none' }}>
+                                <Typography sx={{ fontWeight: 'bold' }}>
                                     Hi, {session.user.user_metadata.full_name}
                                 </Typography>
-                            </div>
+                            </MenuItem>
                         )}
                         {settings.map((setting) => (
                             <MenuItem

@@ -10,7 +10,8 @@ export default function PlayerErrorHandler({ error = null }) {
             <pre>{error && error.message}</pre>
             <p>
                 Please check the validity and scope of your Spotify Access
-                Token. Regenerate it using the given link and try again!
+                Token. Regenerate it using the given link or relogin and try
+                again!
             </p>
         </div>
     );
