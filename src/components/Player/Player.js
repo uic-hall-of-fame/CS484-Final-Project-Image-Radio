@@ -10,6 +10,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import CircularProgress from '@mui/material/CircularProgress';
 import MusicPlayer from './MusicPlayer';
 import PlayerErrorHandler from './PlayerErrorHandler';
 import RadioPlaylist from './RadioPlaylist';
@@ -36,6 +37,7 @@ export default function Player({ session }) {
     const [liveImages, setLiveImages] = useState(black_image_base64);
     const [loading, setLoading] = useState(false);
     const [playlist, setPlaylist] = useState([]);
+    const [loadPercent, setLoadPercent] = useState(0);
 
     const scopes = [
         'streaming',
@@ -227,6 +229,7 @@ export default function Player({ session }) {
         setImages({});
         setLiveImages(black_image_base64);
         refreshPlaylist();
+        setLoadPercent(0);
     };
 
     const addSongUriAndLyrics = async () => {
@@ -264,6 +267,11 @@ export default function Player({ session }) {
                         .select('*')
                         .eq('song_id', songID)
                         .eq('lyric_index', index),
+                );
+                setLoadPercent(
+                    ((index + 1) / noOfLines) *
+                        ((i + 1) / selectedSongs.length) *
+                        100,
                 );
             }
 
@@ -305,8 +313,13 @@ export default function Player({ session }) {
             },
         });
 
+        // Manually logging out user when session token expires
         if (response.status === 401) {
             setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
         }
 
         const data = await response.json();
@@ -351,14 +364,19 @@ export default function Player({ session }) {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${session.provider_token}`,
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
         });
 
+        // Manually logging out user when session token expires
         if (response.status === 401) {
             setTokenError(true);
+            // Session token expired
+            await supabase.auth.signOut();
+            document.location.href = '/';
+            return {}; // Returning a blank object to not let the below lines execute
         }
 
         const data = await response.json();
@@ -562,12 +580,7 @@ export default function Player({ session }) {
                         playlist={playlist}
                         setPlaylist={setPlaylist}
                     />
-                    {!(
-                        loading ||
-                        playlist.filter((song) => {
-                            return song.isSelected;
-                        }).length === 0
-                    ) ? (
+                    {!loading ? (
                         <Button
                             variant="contained"
                             size="small"
@@ -575,10 +588,22 @@ export default function Player({ session }) {
                             onClick={() => {
                                 addSongUriAndLyrics();
                             }}
+                            disabled={
+                                loading ||
+                                playlist.filter((song) => {
+                                    return song.isSelected;
+                                }).length === 0
+                            }
                         >
                             Play Songs
                         </Button>
-                    ) : null}
+                    ) : (
+                        <CircularProgress
+                            variant="determinate"
+                            value={loadPercent}
+                            sx={{ mt: 5 }}
+                        />
+                    )}
                 </div>
             ) : null}
         </>

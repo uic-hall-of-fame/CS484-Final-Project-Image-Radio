@@ -149,6 +149,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
             );
             return '';
         }
+        console.log(data);
         return data.data[0].b64_json;
     };
 
@@ -189,7 +190,7 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
         // Manually logging out user when session token expires
         if (response.status === 401) {
             // Session token expired
-            supabase.auth.signOut();
+            await supabase.auth.signOut();
             document.location.href = '/';
             return {}; // Returning a blank object to not let the below lines execute
         }
