@@ -10,11 +10,15 @@
 
 https://image-radio.netlify.app/<br/>
 
-<b>Link to App's Screencast showing current functionality in action:</b> https://drive.google.com/file/d/1kkrAsscLu3QhdpBbjFRY44xYlZltSqDm/view?usp=share_link
+<b>Link to App's Screencast showing Final functionality in action:</b> https://drive.google.com/file/d/1z26fc4TEsQXv54e9EIx7PjdzC85vuLZG/view?usp=sharing
 
-<b>Note:</b> The Spotify Web SDK requires you to have Spotify Premium to use the Player in our application. Mentioned below is a test account with Spotify Premium activated on it -<br/>
-Username: imageradio484@gmail.com<br/>
-Password: imageradio484$*$
+<b>Link to App's Screencast showing MVP functionality in action:</b> https://drive.google.com/file/d/1kkrAsscLu3QhdpBbjFRY44xYlZltSqDm/view?usp=share_link
+
+<b>Note:</b> The Spotify Web SDK requires you to have Spotify Premium to use the Player in our application. Since the image generation DALLE-2 API has a fixed credit limit, we are limiting the 'Add a song to the radio' feature only to admin users, to avoid exhausting our API calls. Anyone with a Spotify Premium Account can view and play the songs (with synchronized lyrics and AI generated images) on our application. However, only admin users can add a new song to it.
+
+## Architecture Diagram
+
+![Alt text](public/images/Architecture_Diagram.png "Architecture Diagram")
 
 ## Features
 
