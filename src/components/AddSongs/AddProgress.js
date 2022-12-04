@@ -243,15 +243,15 @@ function AddProgress({ session, songName, songArtist, setAddingSong }) {
                 songArtist,
             );
             setSongDetails(fetchedSongDetails);
-            const fetchedIDsFromDB = (
-                await supabase.from('songs').select('song_id')
-            ).data;
-
+            const fetchedIDsFromDB = (await supabase.from('songs').select('*'))
+                .data;
             // Checking if the song already exists in the database
             for (let index = 0; index < fetchedIDsFromDB.length; index++) {
                 if (
                     fetchedIDsFromDB[index].song_id ===
-                    fetchedSongDetails.song_id
+                        fetchedSongDetails.song_id ||
+                    fetchedIDsFromDB[index].song_name ===
+                        `${fetchedSongDetails.song_name} by ${fetchedSongDetails.artistString}`
                 ) {
                     setIsSongExist(true);
                     break;
