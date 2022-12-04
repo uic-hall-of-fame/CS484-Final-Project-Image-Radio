@@ -39,6 +39,7 @@ export default function Player({ session }) {
     const [loading, setLoading] = useState(false);
     const [playlist, setPlaylist] = useState([]);
     const [loadPercent, setLoadPercent] = useState(0);
+    const [selectedSongIDs, setSelectedSongIDs] = useState([]);
 
     const scopes = [
         'streaming',
@@ -108,6 +109,18 @@ export default function Player({ session }) {
     };
 
     const getPlayerUpdates = (playerState) => {
+        // If the user will play the same song from a different country they will have different song_id corresponding to the same song
+        let alternate_id = null;
+        if (
+            playerState.track.id !== '' &&
+            !selectedSongIDs.includes(playerState.track.id)
+        ) {
+            // Song has different id
+            alternate_id = playlist.filter((song) => {
+                return song.song_name === playerState.track.name;
+            })[0].song_id;
+        }
+
         if (timeOutID) {
             clearTimeout(timeOutID); // Stop any setTimeout if running
         }
@@ -143,8 +156,17 @@ export default function Player({ session }) {
         } else if (playerState.isPlaying) {
             // If the song is being played
             const startTime = playerState.progressMs;
-            const songLyrics = lyrics[playerState.track.id].lines;
-            const songImages = images[playerState.track.id];
+
+            let songLyrics;
+            let songImages;
+            if (alternate_id) {
+                songLyrics = lyrics[alternate_id].lines;
+                songImages = images[alternate_id];
+            } else {
+                songLyrics = lyrics[playerState.track.id].lines;
+                songImages = images[playerState.track.id];
+            }
+
             const startIndex = getStartIndex(startTime, songLyrics); // Index of the songLyrics array from which the lyrics will start displaying on the screen
 
             // offset is the time in ms by which our song being played is ahead of the start time of the lyrics at "startIndex" index
@@ -240,7 +262,11 @@ export default function Player({ session }) {
         const selectedSongs = playlist.filter(
             (song) => song.isSelected === true,
         );
-
+        setSelectedSongIDs(
+            selectedSongs.map((selectedSong) => {
+                return selectedSong.song_id;
+            }),
+        );
         for (let i = 0; i < selectedSongs.length; i++) {
             const songID = selectedSongs[i].song_id;
 
