@@ -182,13 +182,13 @@ export default function Player({ session }) {
             ) {
                 // 1st Case : First play event on the player
                 setFirstPlayHappened(true);
-                offset -= 1000;
+                offset -= 350;
             } else if (
                 firstPlayHappened &&
                 playerState.type === 'track_update'
             ) {
                 // 2nd Case : New song played on the player excluding the first case
-                offset -= 1000;
+                offset -= 0; // not needed as the problem is fixed in the new react-spotify-web-playback component
             }
 
             // Display the lyrics on the screen
