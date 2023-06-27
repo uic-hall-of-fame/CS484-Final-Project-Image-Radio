@@ -492,8 +492,8 @@ export default function Player({ session }) {
                             <img
                                 src={`data:image/jpeg;base64,${liveImages}`}
                                 id="base64image"
-                                height="400px"
-                                width="400px"
+                                height="27%"
+                                width="27%"
                                 alt="Failed to load"
                             />
                         </div>
