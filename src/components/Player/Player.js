@@ -90,7 +90,15 @@ export default function Player({ session }) {
         const fetchedPlaylist = await Promise.all(
             fetchedSongsFromDB.map(async (song) => {
                 const songDetails = await getSongDetailsByID(song.song_id);
-                return { ...songDetails, isSelected: false };
+
+                const lyrics = await getSongLyricsByID(songDetails.song_id);
+                const hasLyrics = 'lines' in lyrics; // checking if the lyrics still exists for the song
+
+                return {
+                    ...songDetails,
+                    isSelected: false,
+                    hasLyrics,
+                };
             }),
         );
 
