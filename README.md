@@ -8,7 +8,7 @@
 
 ## Link to hosted app
 
-https://image-radio.netlify.app/<br/>
+https://image-radio-ai.netlify.app/<br/>
 
 <b>Link to App's Screencast showing Final functionality in action:</b> https://drive.google.com/file/d/1z26fc4TEsQXv54e9EIx7PjdzC85vuLZG/view?usp=sharing
 
