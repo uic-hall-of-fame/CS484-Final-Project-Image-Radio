@@ -9,6 +9,12 @@ import {
 } from '@mui/material';
 
 export default function RadioPlaylist({ playlist, setPlaylist }) {
+    const getBackground = (song) => {
+        if (song.hasLyrics) {
+            return song.isSelected ? 'lightgreen' : null;
+        }
+        return '#dc143c';
+    };
     return (
         <List sx={{ minWidth: '50%' }}>
             {playlist
@@ -20,15 +26,18 @@ export default function RadioPlaylist({ playlist, setPlaylist }) {
                               borderBottom: 1,
                               borderTop: 1,
                               borderColor: 'lightgray',
-                              background: song.isSelected ? 'lightgreen' : null,
+                              background: getBackground(song),
                               opacity: song.isSelected ? '50%' : '100%',
                           }}
                           onClick={() => {
-                              const modifiedPlaylist = [...playlist];
-                              modifiedPlaylist[index].isSelected =
-                                  !modifiedPlaylist[index].isSelected;
-                              setPlaylist(modifiedPlaylist);
+                              if (song.hasLyrics) {
+                                  const modifiedPlaylist = [...playlist];
+                                  modifiedPlaylist[index].isSelected =
+                                      !modifiedPlaylist[index].isSelected;
+                                  setPlaylist(modifiedPlaylist);
+                              }
                           }}
+                          disabled={!song.hasLyrics}
                       >
                           <ListItemAvatar>
                               <Avatar

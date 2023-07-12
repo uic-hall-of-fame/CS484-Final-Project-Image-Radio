@@ -90,7 +90,15 @@ export default function Player({ session }) {
         const fetchedPlaylist = await Promise.all(
             fetchedSongsFromDB.map(async (song) => {
                 const songDetails = await getSongDetailsByID(song.song_id);
-                return { ...songDetails, isSelected: false };
+
+                const lyrics = await getSongLyricsByID(songDetails.song_id);
+                const hasLyrics = 'lines' in lyrics; // checking if the lyrics still exists for the song
+
+                return {
+                    ...songDetails,
+                    isSelected: false,
+                    hasLyrics,
+                };
             }),
         );
 
@@ -182,13 +190,13 @@ export default function Player({ session }) {
             ) {
                 // 1st Case : First play event on the player
                 setFirstPlayHappened(true);
-                offset -= 1000;
+                offset -= 350;
             } else if (
                 firstPlayHappened &&
                 playerState.type === 'track_update'
             ) {
                 // 2nd Case : New song played on the player excluding the first case
-                offset -= 1000;
+                offset -= 0; // not needed as the problem is fixed in the new react-spotify-web-playback component
             }
 
             // Display the lyrics on the screen
@@ -492,8 +500,8 @@ export default function Player({ session }) {
                             <img
                                 src={`data:image/jpeg;base64,${liveImages}`}
                                 id="base64image"
-                                height="400px"
-                                width="400px"
+                                height="27%"
+                                width="27%"
                                 alt="Failed to load"
                             />
                         </div>
